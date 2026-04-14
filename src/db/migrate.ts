@@ -14,10 +14,18 @@ async function migrate() {
   const sql = getDb(databaseUrl);
   const schema = readFileSync(join(__dirname, 'schema.sql'), 'utf-8');
 
-  console.log('Running migration against Neon...');
-  await sql.transaction(async (tx) => {
-    await tx(schema);
-  });
+  // Split on blank lines into individual CREATE TABLE statements
+  const statements = schema
+    .split(/\n\n/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+
+  console.log(`Running migration against Neon (${statements.length} statements)...`);
+
+  for (const stmt of statements) {
+    await sql.query(stmt);
+  }
+
   console.log('Migration complete. Tables created (or already existed).');
 }
 
