@@ -7,6 +7,7 @@ export default defineConfig({
     platformProxy: {
       enabled: true,
     },
-    cloudflareModules: false,
+    sessions: false,
+    imageService: 'passthrough',
   }),
 });
