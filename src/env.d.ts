@@ -3,7 +3,7 @@
 
 interface ImportMetaEnv {
   readonly DATABASE_URL: string;
-  readonly ENCHARGE_API_KEY: string;
+  readonly ENCHARGE_WRITE_KEY: string;
   readonly ADMIN_PASSWORD: string;
 }
 
