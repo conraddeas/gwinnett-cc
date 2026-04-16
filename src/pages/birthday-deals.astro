@@ -16,6 +16,10 @@ const listings = await sql`
 const categories = [...new Set(
   listings.map((l: any) => l.category).filter(Boolean)
 )].sort() as string[];
+
+const cities = [...new Set(
+  listings.map((l: any) => l.city).filter(Boolean)
+)].sort() as string[];
 ---
 
 <!DOCTYPE html>
@@ -91,6 +95,14 @@ const categories = [...new Set(
           <button class="pill" data-category={cat}>{cat}</button>
         ))}
       </div>
+      {cities.length > 0 && (
+        <div class="filter-pills" id="city-pills">
+          <button class="pill pill--active" data-city="all">All Cities</button>
+          {cities.map((city) => (
+            <button class="pill" data-city={city}>{city}</button>
+          ))}
+        </div>
+      )}
     </div>
   </section>
 
@@ -143,6 +155,7 @@ const categories = [...new Set(
   const PER_PAGE = 12;
   let currentPage = 1;
   let activeCategory = 'all';
+  let activeCity = 'all';
   let searchTerm = '';
 
   /* ── Helpers ── */
@@ -164,6 +177,7 @@ const categories = [...new Set(
     const q = searchTerm.toLowerCase();
     return listings.filter((l) => {
       if (activeCategory !== 'all' && l.category !== activeCategory) return false;
+      if (activeCity !== 'all' && l.city !== activeCity) return false;
       if (!q) return true;
       const deal = getDeal(l) || '';
       return (
@@ -288,9 +302,19 @@ const categories = [...new Set(
   document.getElementById('filter-pills').addEventListener('click', (e) => {
     const btn = e.target.closest('.pill');
     if (!btn) return;
-    document.querySelectorAll('.pill').forEach((p) => p.classList.remove('pill--active'));
+    document.querySelectorAll('#filter-pills .pill').forEach((p) => p.classList.remove('pill--active'));
     btn.classList.add('pill--active');
     activeCategory = btn.getAttribute('data-category');
+    currentPage = 1;
+    renderGrid();
+  });
+
+  document.getElementById('city-pills')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pill');
+    if (!btn) return;
+    document.querySelectorAll('#city-pills .pill').forEach((p) => p.classList.remove('pill--active'));
+    btn.classList.add('pill--active');
+    activeCity = btn.getAttribute('data-city');
     currentPage = 1;
     renderGrid();
   });
