@@ -1,0 +1,622 @@
+---
+// Newsletter signup — Gwinnett.cc
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Free Weekly Newsletter — Gwinnett.cc</title>
+  <meta name="description" content="One email every Wednesday. Local birthday deals, featured businesses, community finds, and Gwinnett County resources. Free, always." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ====== HEADER ====== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="wordmark">Gwinnett.cc</a>
+      <nav class="site-nav">
+        <a href="/#directories">Directories</a>
+        <a href="/#resources">Resources</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ====== HERO ====== -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">Free Weekly Newsletter</p>
+      <h1 class="hero-headline">Gwinnett Community<br />Connections</h1>
+      <p class="hero-sub">
+        One email every Wednesday. Local birthday deals, featured
+        businesses, community finds, and Gwinnett County resources.
+        Free, always.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====== MAIN CONTENT ====== -->
+  <div class="page-body">
+    <div class="container page-inner">
+
+      <!-- ====== WHAT'S INSIDE ====== -->
+      <section class="value-props">
+        <h2 class="vp-title">What's inside every issue</h2>
+        <ul class="vp-list">
+          <li class="vp-item">
+            <span class="vp-icon">🎂</span>
+            <div class="vp-text">
+              <strong>Birthday deals</strong>
+              <span>From local restaurants, spas, and venues — curated for Gwinnett County</span>
+            </div>
+          </li>
+          <li class="vp-item">
+            <span class="vp-icon">🏠</span>
+            <div class="vp-text">
+              <strong>Featured home service partners</strong>
+              <span>Vetted local contractors and service providers worth knowing</span>
+            </div>
+          </li>
+          <li class="vp-item">
+            <span class="vp-icon">📍</span>
+            <div class="vp-text">
+              <strong>New listings and local spotlights</strong>
+              <span>Businesses and places that make this county worth living in</span>
+            </div>
+          </li>
+          <li class="vp-item">
+            <span class="vp-icon">🎉</span>
+            <div class="vp-text">
+              <strong>Events and community resources</strong>
+              <span>What's happening and what's available across Gwinnett</span>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ====== SIGNUP FORM ====== -->
+      <section class="signup-section">
+        <div class="signup-card">
+          <h2 class="signup-heading">Subscribe — it's free</h2>
+
+          <form id="subscribe-form" class="subscribe-form" novalidate>
+            <input type="hidden" name="source" value="newsletter-page" />
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="first-name">First Name <span class="optional">(optional)</span></label>
+                <input
+                  type="text"
+                  id="first-name"
+                  name="firstName"
+                  placeholder="Jane"
+                  autocomplete="given-name"
+                />
+              </div>
+              <div class="form-field">
+                <label for="email">Email <span class="required">*</span></label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="jane@example.com"
+                  autocomplete="email"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-field">
+                <label for="city">City <span class="optional">(optional)</span></label>
+                <select id="city" name="city">
+                  <option value="">Select a city…</option>
+                  <option value="Lawrenceville">Lawrenceville</option>
+                  <option value="Duluth">Duluth</option>
+                  <option value="Suwanee">Suwanee</option>
+                  <option value="Buford">Buford</option>
+                  <option value="Norcross">Norcross</option>
+                  <option value="Peachtree Corners">Peachtree Corners</option>
+                  <option value="Snellville">Snellville</option>
+                  <option value="Sugar Hill">Sugar Hill</option>
+                  <option value="Lilburn">Lilburn</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-field">
+                <label for="birth_month">Birthday Month <span class="optional">(optional)</span></label>
+                <select id="birth_month" name="birth_month">
+                  <option value="">-- Month --</option>
+                  <option value="1">January</option>
+                  <option value="2">February</option>
+                  <option value="3">March</option>
+                  <option value="4">April</option>
+                  <option value="5">May</option>
+                  <option value="6">June</option>
+                  <option value="7">July</option>
+                  <option value="8">August</option>
+                  <option value="9">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row form-row--last">
+              <div class="form-field">
+                <label for="birth_day">Birthday Day <span class="optional">(optional)</span></label>
+                <input
+                  type="number"
+                  id="birth_day"
+                  name="birth_day"
+                  min="1"
+                  max="31"
+                  placeholder="e.g. 14"
+                />
+              </div>
+              <div class="form-field form-field--empty"></div>
+            </div>
+
+            <p id="form-error" class="form-msg form-msg--error" hidden></p>
+
+            <button type="submit" class="btn-submit">Subscribe Free</button>
+          </form>
+
+          <div id="subscribe-success" class="form-success" hidden>
+            <span class="success-icon">✓</span>
+            <div>
+              <p class="success-title">You're in — welcome to the list.</p>
+              <p class="success-sub">Check your inbox for a confirmation email.</p>
+            </div>
+          </div>
+
+          <p class="social-proof">
+            Join locals from Lawrenceville, Duluth, Suwanee, and across Gwinnett County.
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="site-footer" id="contact">
+    <div class="container footer-inner">
+      <span class="footer-wordmark">Gwinnett.cc</span>
+      <p class="footer-tagline">Community. Connections. Curated.</p>
+      <div class="footer-links">
+        <a href="mailto:hello@gwinnett.cc">hello@gwinnett.cc</a>
+        <span class="footer-sep">&middot;</span>
+        <a href="/privacy">Privacy</a>
+      </div>
+      <p class="footer-copy">&copy; {new Date().getFullYear()} Gwinnett.cc. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+<style>
+  /* ── Reset & base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    color: #111827;
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #ffffff;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+
+  .wordmark {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: #111827;
+  }
+
+  .site-nav { display: flex; gap: 2rem; }
+
+  .site-nav a {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+    transition: color 0.15s;
+  }
+  .site-nav a:hover { color: #111827; }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 4rem 0 3.5rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-headline {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.08;
+    margin-bottom: 1.25rem;
+  }
+
+  .hero-sub {
+    font-size: 1.125rem;
+    color: #6b7280;
+    max-width: 500px;
+    line-height: 1.65;
+  }
+
+  /* ── Page body layout ── */
+  .page-body {
+    padding: 4rem 0 5rem;
+  }
+
+  .page-inner {
+    display: grid;
+    grid-template-columns: 1fr 520px;
+    gap: 5rem;
+    align-items: start;
+  }
+
+  /* ── Value props ── */
+  .vp-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 1.75rem;
+  }
+
+  .vp-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+
+  .vp-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .vp-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .vp-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+
+  .vp-text strong {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .vp-text span {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.55;
+  }
+
+  /* ── Signup card ── */
+  .signup-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 2.25rem 2rem;
+  }
+
+  .signup-heading {
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    color: #111827;
+  }
+
+  /* ── Form ── */
+  .subscribe-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .form-field label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #374151;
+  }
+
+  .optional { font-weight: 400; color: #9ca3af; }
+  .required { font-weight: 400; color: #ef4444; }
+
+  .form-field input,
+  .form-field select {
+    padding: 0.6rem 0.875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #111827;
+    background: #ffffff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .form-field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.25rem;
+  }
+
+  .form-field input:focus,
+  .form-field select:focus {
+    outline: none;
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17,24,39,0.06);
+  }
+
+  .form-msg {
+    font-size: 0.875rem;
+    padding: 0.6rem 0.875rem;
+    border-radius: 8px;
+  }
+
+  .form-msg--error {
+    color: #b91c1c;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    background: #111827;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-top: 0.25rem;
+  }
+
+  .btn-submit:hover { background: #1f2937; }
+  .btn-submit:active { background: #374151; }
+  .btn-submit:disabled { opacity: 0.6; cursor: default; }
+
+  /* ── Success state ── */
+  .form-success {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 10px;
+    color: #065f46;
+    margin-bottom: 1.25rem;
+  }
+
+  .success-icon {
+    font-size: 1.25rem;
+    color: #059669;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  .success-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .success-sub {
+    font-size: 0.85rem;
+    color: #047857;
+  }
+
+  /* ── Social proof ── */
+  .social-proof {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    text-align: center;
+    margin-top: 1.25rem;
+    line-height: 1.5;
+  }
+
+  /* ── Footer ── */
+  .site-footer {
+    background: #f9fafb;
+    border-top: 1px solid #f3f4f6;
+    padding: 3rem 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .footer-wordmark {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .footer-tagline {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+
+  .footer-links a { color: #374151; transition: color 0.15s; }
+  .footer-links a:hover { color: #111827; }
+  .footer-sep { color: #d1d5db; }
+
+  .footer-copy {
+    font-size: 0.775rem;
+    color: #9ca3af;
+    margin-top: 0.25rem;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 960px) {
+    .page-inner {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+    }
+
+    .signup-card {
+      max-width: 520px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 3rem 0 2.5rem; }
+    .page-body { padding: 3rem 0 4rem; }
+    .form-row { grid-template-columns: 1fr; }
+    .form-field--empty { display: none; }
+    .signup-card { padding: 1.75rem 1.25rem; }
+    .site-nav { gap: 1.25rem; }
+  }
+</style>
+
+<script>
+  const form = document.getElementById('subscribe-form') as HTMLFormElement;
+  const errorEl = document.getElementById('form-error') as HTMLElement;
+  const successEl = document.getElementById('subscribe-success') as HTMLElement;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+
+    const emailInput = form.querySelector<HTMLInputElement>('#email');
+    if (!emailInput?.value.trim()) {
+      errorEl.textContent = 'Please enter your email address.';
+      errorEl.hidden = false;
+      emailInput?.focus();
+      return;
+    }
+
+    const submitBtn = form.querySelector<HTMLButtonElement>('.btn-submit');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Subscribing…';
+    }
+
+    const body = {
+      email: form.email.value.trim(),
+      firstName: form.firstName.value.trim() || undefined,
+      city: form.city.value || undefined,
+      birth_month: form.birth_month.value || undefined,
+      birth_day: form.birth_day.value || undefined,
+      source: form.source.value,
+    };
+
+    try {
+      const res = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (res.ok) {
+        form.hidden = true;
+        successEl.hidden = false;
+      } else {
+        let msg = 'Something went wrong. Please try again.';
+        try {
+          const data = await res.json();
+          if (data?.message) msg = data.message;
+        } catch {}
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Subscribe Free';
+        }
+      }
+    } catch {
+      errorEl.textContent = 'Network error — please check your connection and try again.';
+      errorEl.hidden = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Subscribe Free';
+      }
+    }
+  });
+</script>
