@@ -1,0 +1,839 @@
+---
+// Birthday Deals application form — Gwinnett.cc
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Your Business — Birthday Deals — Gwinnett.cc</title>
+  <meta name="description" content="List your Gwinnett County business in the Birthday Deals directory." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ====== HEADER ====== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="wordmark">Gwinnett.cc</a>
+      <nav class="site-nav">
+        <a href="/birthday-deals">Birthday Deals</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ====== HERO ====== -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow"><a href="/birthday-deals">Birthday Deals</a> &rsaquo; Apply</p>
+      <h1 class="hero-headline">Add Your Business</h1>
+      <p class="hero-sub">
+        Get in front of Gwinnett County locals celebrating their birthdays.
+        Applications are reviewed and typically live within 2–3 business days.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====== FORM ====== -->
+  <section class="apply-section">
+    <div class="container">
+      <div class="form-wrap">
+
+        <form id="apply-form" novalidate>
+
+          <!-- ── Business Info ── -->
+          <div class="form-block">
+            <h2 class="block-title">Business Info</h2>
+
+            <div class="field">
+              <label for="business_name">Business Name <span class="req">*</span></label>
+              <input type="text" id="business_name" name="business_name"
+                placeholder="The Sugar Factory" required autocomplete="organization" />
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="website">Website <span class="req">*</span></label>
+                <input type="url" id="website" name="website"
+                  placeholder="https://yoursite.com" required autocomplete="url" />
+              </div>
+              <div class="field">
+                <label for="contact_email">
+                  Contact Email <span class="req">*</span>
+                  <span class="field-note">Not shown publicly</span>
+                </label>
+                <input type="email" id="contact_email" name="contact_email"
+                  placeholder="you@yourbusiness.com" required autocomplete="email" />
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Listing Details ── -->
+          <div class="form-block">
+            <h2 class="block-title">Listing Details</h2>
+
+            <div class="field">
+              <div class="label-row">
+                <label for="short_description">Short Description <span class="req">*</span></label>
+                <span class="char-count" id="short-count">0 / 140</span>
+              </div>
+              <textarea id="short_description" name="short_description" rows="2"
+                maxlength="140"
+                placeholder="One or two sentences about your business — shown on the listing card."
+                required></textarea>
+            </div>
+
+            <div class="field">
+              <div class="label-row">
+                <label for="full_description">Full Description <span class="opt">(optional)</span></label>
+                <span class="char-count" id="full-count">0 / 300</span>
+              </div>
+              <textarea id="full_description" name="full_description" rows="4"
+                maxlength="300"
+                placeholder="A longer description shown in the detail panel when someone clicks your listing."></textarea>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <label for="category">Category <span class="req">*</span></label>
+                <select id="category" name="category" required>
+                  <option value="">Select a category…</option>
+                  <option value="Restaurant">Restaurant</option>
+                  <option value="Spa &amp; Salon">Spa &amp; Salon</option>
+                  <option value="Experience">Experience</option>
+                  <option value="Retail">Retail</option>
+                  <option value="Venue">Venue</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="city">City <span class="req">*</span></label>
+                <select id="city" name="city" required>
+                  <option value="">Select a city…</option>
+                  <option value="Lawrenceville">Lawrenceville</option>
+                  <option value="Duluth">Duluth</option>
+                  <option value="Suwanee">Suwanee</option>
+                  <option value="Buford">Buford</option>
+                  <option value="Norcross">Norcross</option>
+                  <option value="Peachtree Corners">Peachtree Corners</option>
+                  <option value="Snellville">Snellville</option>
+                  <option value="Sugar Hill">Sugar Hill</option>
+                  <option value="Lilburn">Lilburn</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── Birthday Offer ── -->
+          <div class="form-block">
+            <h2 class="block-title">Birthday Offer</h2>
+
+            <div class="field">
+              <label for="deal">Deal / Offer Description <span class="req">*</span></label>
+              <p class="field-hint">Be specific. "Free dessert with entrée purchase" works better than "Birthday discount."</p>
+              <textarea id="deal" name="deal" rows="3"
+                placeholder="e.g. Free slice of birthday cake with any entrée purchase during your birthday month."
+                required></textarea>
+            </div>
+
+            <div class="field">
+              <label for="phone">Phone <span class="opt">(optional)</span></label>
+              <input type="tel" id="phone" name="phone"
+                placeholder="(470) 555-0123" autocomplete="tel" />
+            </div>
+          </div>
+
+          <!-- ── About Your Business ── -->
+          <div class="form-block">
+            <h2 class="block-title">About Your Business <span class="block-title-note">(optional)</span></h2>
+            <div class="checkbox-group">
+              <label class="checkbox-label">
+                <input type="checkbox" name="locally_owned" id="locally_owned" />
+                <span class="checkbox-box"></span>
+                <span>Locally owned &amp; operated</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" name="veteran_owned" id="veteran_owned" />
+                <span class="checkbox-box"></span>
+                <span>Veteran owned</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- ── Listing Tier ── -->
+          <div class="form-block">
+            <h2 class="block-title">Listing Tier</h2>
+            <p class="field-hint">Both tiers get you in the directory. Paid Featured listings appear first and are highlighted in search results.</p>
+            <div class="tier-group">
+              <label class="tier-card">
+                <input type="radio" name="tier" value="free" checked />
+                <div class="tier-inner">
+                  <div class="tier-top">
+                    <span class="tier-name">Free Listing</span>
+                    <span class="tier-price">$0</span>
+                  </div>
+                  <p class="tier-desc">Standard placement in the Birthday Deals directory</p>
+                </div>
+              </label>
+              <label class="tier-card">
+                <input type="radio" name="tier" value="paid" />
+                <div class="tier-inner">
+                  <div class="tier-top">
+                    <span class="tier-name">Paid Featured</span>
+                    <span class="tier-price">$97–$197/yr</span>
+                  </div>
+                  <p class="tier-desc">Priority placement, highlighted listing, and analytics</p>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- ── Submit ── -->
+          <div class="form-submit-wrap">
+            <p id="apply-error" class="form-msg form-msg--error" hidden></p>
+            <button type="submit" id="submit-btn" class="btn-submit">Submit Application</button>
+            <p class="submit-note">Free to apply. No credit card required.</p>
+          </div>
+
+        </form>
+
+        <!-- ── Success state ── -->
+        <div id="apply-success" class="success-state" hidden>
+          <div class="success-check-wrap">
+            <span class="success-check">&#10003;</span>
+          </div>
+          <h2 class="success-heading">Application Received!</h2>
+          <p class="success-body">
+            Thanks for applying to the Birthday Deals directory. We'll review your
+            listing and follow up at your contact email within 2–3 business days.
+          </p>
+          <a href="/birthday-deals" class="btn-back">Browse Birthday Deals &rarr;</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-wordmark">Gwinnett.cc</span>
+      <p class="footer-tagline">Community. Connections. Curated.</p>
+      <div class="footer-links">
+        <a href="mailto:hello@gwinnett.cc">hello@gwinnett.cc</a>
+        <span class="footer-sep">&middot;</span>
+        <a href="/privacy">Privacy</a>
+      </div>
+      <p class="footer-copy">&copy; {new Date().getFullYear()} Gwinnett.cc. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+<style>
+  /* ── Reset & base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    color: #111827;
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
+  button { cursor: pointer; font-family: inherit; }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #ffffff;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+
+  .wordmark {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: #111827;
+  }
+
+  .site-nav { display: flex; gap: 2rem; }
+
+  .site-nav a {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+    transition: color 0.15s;
+  }
+  .site-nav a:hover { color: #111827; }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 3.5rem 0 3rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-eyebrow a {
+    color: #9ca3af;
+    transition: color 0.15s;
+  }
+  .hero-eyebrow a:hover { color: #6b7280; }
+
+  .hero-headline {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .hero-sub {
+    font-size: 1.125rem;
+    color: #6b7280;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  /* ── Apply section ── */
+  .apply-section {
+    padding: 3rem 0 5rem;
+  }
+
+  .form-wrap {
+    max-width: 680px;
+  }
+
+  /* ── Form blocks ── */
+  .form-block {
+    padding-bottom: 2.5rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .block-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1.5rem;
+  }
+
+  .block-title-note {
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: #9ca3af;
+  }
+
+  /* ── Fields ── */
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .field:last-child { margin-bottom: 0; }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .field-row:last-child { margin-bottom: 0; }
+
+  .field-row .field { margin-bottom: 0; }
+
+  .label-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .field label,
+  .label-row label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #374151;
+  }
+
+  .req { color: #ef4444; font-weight: 400; }
+  .opt { color: #9ca3af; font-weight: 400; }
+
+  .field-note {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #9ca3af;
+    margin-left: 0.4rem;
+  }
+
+  .field-hint {
+    font-size: 0.8rem;
+    color: #6b7280;
+    line-height: 1.5;
+    margin-bottom: 0.5rem;
+    margin-top: -0.1rem;
+  }
+
+  .char-count {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  .char-count--warn { color: #d97706; }
+  .char-count--limit { color: #ef4444; }
+
+  /* ── Inputs ── */
+  .field input[type="text"],
+  .field input[type="url"],
+  .field input[type="email"],
+  .field input[type="tel"],
+  .field select {
+    padding: 0.6rem 0.875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #111827;
+    background: #ffffff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    padding-right: 2.25rem;
+  }
+
+  .field textarea {
+    padding: 0.65rem 0.875rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #111827;
+    background: #ffffff;
+    resize: vertical;
+    line-height: 1.6;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    outline: none;
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17,24,39,0.06);
+  }
+
+  /* ── Checkboxes ── */
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 0.9rem;
+    color: #374151;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .checkbox-box {
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 4px;
+    background: #ffffff;
+    transition: border-color 0.15s, background 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .checkbox-label input:checked ~ .checkbox-box {
+    background: #111827;
+    border-color: #111827;
+  }
+
+  .checkbox-label input:checked ~ .checkbox-box::after {
+    content: '';
+    display: block;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #ffffff;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg) translate(-1px, -1px);
+  }
+
+  /* ── Tier cards ── */
+  .tier-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.25rem;
+  }
+
+  .tier-card {
+    cursor: pointer;
+    display: block;
+  }
+
+  .tier-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .tier-inner {
+    padding: 1.25rem 1.5rem;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 10px;
+    background: #ffffff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .tier-card:hover .tier-inner {
+    border-color: #d1d5db;
+  }
+
+  .tier-card--selected .tier-inner {
+    border-color: #111827;
+    box-shadow: 0 0 0 2px rgba(17,24,39,0.08);
+  }
+
+  .tier-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.4rem;
+  }
+
+  .tier-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .tier-price {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .tier-desc {
+    font-size: 0.8rem;
+    color: #6b7280;
+    line-height: 1.5;
+  }
+
+  /* ── Submit ── */
+  .form-submit-wrap {
+    padding-top: 0.5rem;
+  }
+
+  .form-msg {
+    font-size: 0.875rem;
+    padding: 0.65rem 0.875rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .form-msg--error {
+    color: #b91c1c;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+
+  .btn-submit {
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background: #111827;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: inherit;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-submit:hover { background: #1f2937; }
+  .btn-submit:active { background: #374151; }
+  .btn-submit:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+
+  .submit-note {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    color: #9ca3af;
+    text-align: center;
+  }
+
+  /* ── Success state ── */
+  .success-state {
+    padding: 4rem 2rem;
+    text-align: center;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .success-check-wrap {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+  }
+
+  .success-check {
+    font-size: 1.5rem;
+    color: #059669;
+  }
+
+  .success-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.75rem;
+  }
+
+  .success-body {
+    font-size: 1rem;
+    color: #6b7280;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .btn-back {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.65rem 1.5rem;
+    background: #111827;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .btn-back:hover { background: #1f2937; }
+
+  /* ── Footer ── */
+  .site-footer {
+    background: #f9fafb;
+    border-top: 1px solid #f3f4f6;
+    padding: 3rem 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .footer-wordmark {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .footer-tagline {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+
+  .footer-links a { color: #374151; transition: color 0.15s; }
+  .footer-links a:hover { color: #111827; }
+
+  .footer-sep { color: #d1d5db; }
+
+  .footer-copy {
+    font-size: 0.775rem;
+    color: #9ca3af;
+    margin-top: 0.25rem;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .hero { padding: 2.5rem 0 2rem; }
+    .field-row { grid-template-columns: 1fr; }
+    .tier-group { grid-template-columns: 1fr; }
+    .site-nav { gap: 1.25rem; }
+  }
+</style>
+
+<script>
+  /* ── Character counts ── */
+  function bindCharCount(textareaId: string, countId: string, max: number) {
+    const ta = document.getElementById(textareaId) as HTMLTextAreaElement;
+    const counter = document.getElementById(countId) as HTMLElement;
+    ta.addEventListener('input', () => {
+      const len = ta.value.length;
+      counter.textContent = `${len} / ${max}`;
+      counter.classList.toggle('char-count--warn', len >= max - 10 && len < max);
+      counter.classList.toggle('char-count--limit', len >= max);
+    });
+  }
+
+  bindCharCount('short_description', 'short-count', 140);
+  bindCharCount('full_description', 'full-count', 300);
+
+  /* ── Tier card selected state ── */
+  function syncTierCards() {
+    document.querySelectorAll<HTMLLabelElement>('.tier-card').forEach((card) => {
+      const radio = card.querySelector<HTMLInputElement>('input[type="radio"]')!;
+      card.classList.toggle('tier-card--selected', radio.checked);
+    });
+  }
+
+  document.querySelectorAll<HTMLInputElement>('input[name="tier"]').forEach((r) =>
+    r.addEventListener('change', syncTierCards)
+  );
+  syncTierCards();
+
+  /* ── Form submission ── */
+  const form = document.getElementById('apply-form') as HTMLFormElement;
+  const errorEl = document.getElementById('apply-error') as HTMLElement;
+  const successEl = document.getElementById('apply-success') as HTMLElement;
+  const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+
+    const required: [string, string][] = [
+      ['business_name', 'Business name'],
+      ['website', 'Website'],
+      ['contact_email', 'Contact email'],
+      ['short_description', 'Short description'],
+      ['category', 'Category'],
+      ['city', 'City'],
+      ['deal', 'Deal / offer description'],
+    ];
+
+    for (const [id, label] of required) {
+      const el = form.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>(`#${id}`)!;
+      if (!el.value.trim()) {
+        errorEl.textContent = `${label} is required.`;
+        errorEl.hidden = false;
+        el.focus();
+        return;
+      }
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    const body = {
+      business_name:     (form.querySelector('#business_name')     as HTMLInputElement).value.trim(),
+      website:           (form.querySelector('#website')           as HTMLInputElement).value.trim(),
+      contact_email:     (form.querySelector('#contact_email')     as HTMLInputElement).value.trim(),
+      short_description: (form.querySelector('#short_description') as HTMLTextAreaElement).value.trim(),
+      full_description:  (form.querySelector('#full_description')  as HTMLTextAreaElement).value.trim() || null,
+      category:          (form.querySelector('#category')          as HTMLSelectElement).value,
+      city:              (form.querySelector('#city')              as HTMLSelectElement).value,
+      deal:              (form.querySelector('#deal')              as HTMLTextAreaElement).value.trim(),
+      phone:             (form.querySelector('#phone')             as HTMLInputElement).value.trim() || null,
+      locally_owned:     (form.querySelector('#locally_owned')     as HTMLInputElement).checked,
+      veteran_owned:     (form.querySelector('#veteran_owned')     as HTMLInputElement).checked,
+      tier:              (form.querySelector<HTMLInputElement>('input[name="tier"]:checked'))?.value ?? 'free',
+    };
+
+    try {
+      const res = await fetch('/api/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (res.ok) {
+        form.hidden = true;
+        successEl.hidden = false;
+      } else {
+        let msg = 'Something went wrong. Please try again.';
+        try {
+          const data = await res.json();
+          if (data?.error) msg = data.error;
+        } catch {}
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Application';
+      }
+    } catch {
+      errorEl.textContent = 'Network error — please check your connection and try again.';
+      errorEl.hidden = false;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Application';
+    }
+  });
+</script>
