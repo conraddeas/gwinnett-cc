@@ -44,22 +44,24 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   try {
-    const enchargeRes = await fetch('https://api.encharge.io/v1/people', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Encharge-Token': env.ENCHARGE_WRITE_KEY,
+    const enchargeRes = await fetch(
+      `https://api.encharge.io/v1/people?api_key=${env.ENCHARGE_WRITE_KEY}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          ...(firstName ? { firstName } : {}),
+          tags: [
+            'gwinnett-newsletter',
+            ...(source ? [`source-${source}`] : []),
+            ...(birthMonth ? [`birth-month-${birthMonth}`] : []),
+          ],
+        }),
       },
-      body: JSON.stringify({
-        email,
-        ...(firstName ? { firstName } : {}),
-        tags: [
-          'gwinnett-newsletter',
-          ...(source ? [`source-${source}`] : []),
-          ...(birthMonth ? [`birth-month-${birthMonth}`] : []),
-        ],
-      }),
-    });
+    );
     if (!enchargeRes.ok) {
       console.error('[subscribe] Encharge error:', enchargeRes.status, await enchargeRes.text());
     }
