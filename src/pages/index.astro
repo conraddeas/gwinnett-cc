@@ -128,7 +128,7 @@
             </div>
           </div>
           <div class="form-row">
-            <div class="form-field form-field--city">
+            <div class="form-field">
               <label for="city">City <span class="optional">(optional)</span></label>
               <select id="city" name="city">
                 <option value="">Select a city…</option>
@@ -144,11 +144,6 @@
                 <option value="Other">Other</option>
               </select>
             </div>
-            <div class="form-field form-field--submit">
-              <button type="submit" class="btn-submit">Get the Newsletter</button>
-            </div>
-          </div>
-          <div class="form-row">
             <div class="form-field">
               <label for="birth_month">Birthday Month <span class="optional">(optional)</span></label>
               <select id="birth_month" name="birth_month">
@@ -167,6 +162,8 @@
                 <option value="12">December</option>
               </select>
             </div>
+          </div>
+          <div class="form-row">
             <div class="form-field">
               <label for="birth_day">Birthday Day <span class="optional">(optional)</span></label>
               <input
@@ -177,6 +174,9 @@
                 max="31"
                 placeholder="e.g. 14"
               />
+            </div>
+            <div class="form-field form-field--submit">
+              <button type="submit" class="btn-submit">Get the Newsletter</button>
             </div>
           </div>
           <p id="form-error" class="form-msg form-msg--error" hidden></p>
@@ -263,6 +263,7 @@
   }
 
   a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
 
   /* ── Layout ── */
   .container {
