@@ -104,6 +104,7 @@
 
       <div class="newsletter-form-wrap">
         <form id="subscribe-form" class="subscribe-form" novalidate>
+          <input type="hidden" name="source" value="homepage" />
           <div class="form-row">
             <div class="form-field">
               <label for="first-name">First Name <span class="optional">(optional)</span></label>
@@ -828,6 +829,7 @@
       city: form.city.value || undefined,
       birth_month: form.birth_month.value || undefined,
       birth_day: form.birth_day.value || undefined,
+      source: form.source.value,
     };
 
     try {
