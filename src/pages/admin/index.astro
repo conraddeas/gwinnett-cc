@@ -1,0 +1,378 @@
+---
+// Admin review queue — Gwinnett.cc
+import { getDb } from '../../lib/db';
+
+const env = (Astro.locals as any).runtime.env;
+
+function getCookie(header: string | null, name: string): string | null {
+  if (!header) return null;
+  for (const part of header.split(';')) {
+    const idx = part.indexOf('=');
+    if (idx === -1) continue;
+    const k = part.slice(0, idx).trim();
+    const v = part.slice(idx + 1).trim();
+    if (k === name) return v || null;
+  }
+  return null;
+}
+
+let wrongPassword = false;
+
+if (Astro.request.method === 'POST') {
+  let password = '';
+  try {
+    const form = await Astro.request.formData();
+    password = (form.get('password') as string | null) ?? '';
+  } catch {}
+
+  if (env.ADMIN_PASSWORD && password === env.ADMIN_PASSWORD) {
+    const maxAge = 8 * 60 * 60;
+    return new Response(null, {
+      status: 302,
+      headers: {
+        Location: '/admin',
+        'Set-Cookie': `admin_session=${env.ADMIN_PASSWORD}; HttpOnly; Secure; SameSite=Strict; Max-Age=${maxAge}; Path=/`,
+      },
+    });
+  }
+  wrongPassword = true;
+}
+
+const cookieHeader = Astro.request.headers.get('cookie');
+const sessionValue = getCookie(cookieHeader, 'admin_session');
+const isAuthed = !!env.ADMIN_PASSWORD && !!sessionValue && sessionValue === env.ADMIN_PASSWORD;
+
+let listings: any[] = [];
+if (isAuthed) {
+  const sql = getDb(env.DATABASE_URL);
+  listings = await sql`
+    SELECT id, business_name, directory, category, city, short_description,
+           directory_specific_data, website, contact_email, tier,
+           locally_owned, veteran_owned, created_at
+    FROM listings
+    WHERE status = 'pending'
+    ORDER BY created_at ASC
+  `;
+}
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — Pending Listings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="wordmark">Gwinnett.cc</a>
+      <nav class="site-nav">
+        <a href="/#directories">Directories</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="container">
+
+      {!isAuthed ? (
+        <div class="gate-wrap">
+          <h1 class="gate-title">Admin Login</h1>
+          <p class="gate-sub">Enter your admin password to continue.</p>
+          {wrongPassword && (
+            <p class="gate-error">Incorrect password.</p>
+          )}
+          <form method="POST" class="gate-form">
+            <label class="gate-label" for="password">Password</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              class="gate-input"
+              autofocus
+              required
+            />
+            <button type="submit" class="btn-login">Sign In</button>
+          </form>
+        </div>
+      ) : (
+        <div class="queue-wrap">
+          <div class="queue-header">
+            <h1 class="queue-title">Pending Listings</h1>
+            <span class="queue-count" id="queue-count">{listings.length} pending</span>
+          </div>
+
+          {listings.length === 0 ? (
+            <p class="empty-state">No pending listings. You're all caught up.</p>
+          ) : (
+            <div class="listing-list" id="listing-list">
+              {listings.map((l: any) => {
+                const dsd = l.directory_specific_data ?? {};
+                const deal: string = dsd.deal ?? '';
+                const createdAt = new Date(l.created_at).toLocaleDateString('en-US', {
+                  month: 'short', day: 'numeric', year: 'numeric',
+                });
+                return (
+                  <div class="listing-card" data-id={l.id}>
+                    <div class="card-top">
+                      <div class="card-name-row">
+                        <span class="card-name">{l.business_name}</span>
+                        <span class="badge">{l.directory}</span>
+                      </div>
+                      <div class="card-meta">
+                        <span class="meta-item">{l.category}</span>
+                        <span class="meta-sep">·</span>
+                        <span class="meta-item">{l.city}</span>
+                        <span class="meta-sep">·</span>
+                        <span class={`tier-badge tier-badge--${l.tier}`}>{l.tier}</span>
+                        {l.locally_owned && <span class="flag">Locally Owned</span>}
+                        {l.veteran_owned && <span class="flag">Veteran Owned</span>}
+                      </div>
+                    </div>
+
+                    <div class="card-body">
+                      <div class="field">
+                        <span class="field-label">Short description</span>
+                        <span class="field-value">{l.short_description}</span>
+                      </div>
+                      {deal && (
+                        <div class="field">
+                          <span class="field-label">Deal</span>
+                          <span class="field-value">{deal}</span>
+                        </div>
+                      )}
+                      <div class="field-row">
+                        <div class="field">
+                          <span class="field-label">Website</span>
+                          <a href={l.website} target="_blank" rel="noopener noreferrer" class="field-link">
+                            {l.website}
+                          </a>
+                        </div>
+                        <div class="field">
+                          <span class="field-label">Contact email</span>
+                          <span class="field-value">{l.contact_email}</span>
+                        </div>
+                      </div>
+                      <div class="field">
+                        <span class="field-label">Submitted</span>
+                        <span class="field-value">{createdAt}</span>
+                      </div>
+                    </div>
+
+                    <div class="card-actions">
+                      <button class="btn-approve" data-action="approve" data-id={l.id}>
+                        Approve
+                      </button>
+                      <button class="btn-reject" data-action="reject" data-id={l.id}>
+                        Reject
+                      </button>
+                      <span class="action-msg" hidden></span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
+    </div>
+  </main>
+
+  <footer class="site-footer" id="contact">
+    <div class="container footer-inner">
+      <span class="footer-wordmark">Gwinnett.cc</span>
+      <p class="footer-tagline">Community. Connections. Curated.</p>
+      <div class="footer-links">
+        <a href="mailto:hello@gwinnett.cc">hello@gwinnett.cc</a>
+        <span class="footer-sep">·</span>
+        <a href="/privacy">Privacy</a>
+      </div>
+      <p class="footer-copy">&copy; {new Date().getFullYear()} Gwinnett.cc. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.btn-approve, .btn-reject').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const action = btn.dataset.action as 'approve' | 'reject';
+      const id = btn.dataset.id;
+      const card = btn.closest<HTMLElement>('.listing-card');
+      const msgEl = card?.querySelector<HTMLElement>('.action-msg');
+      const sibling = card?.querySelector<HTMLButtonElement>(
+        action === 'approve' ? '.btn-reject' : '.btn-approve'
+      );
+
+      btn.disabled = true;
+      if (sibling) sibling.disabled = true;
+
+      try {
+        const res = await fetch(`/api/admin/${action}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }),
+        });
+
+        if (res.ok) {
+          card?.remove();
+          const countEl = document.getElementById('queue-count');
+          const list = document.getElementById('listing-list');
+          if (countEl && list) {
+            const remaining = list.querySelectorAll('.listing-card').length;
+            countEl.textContent = `${remaining} pending`;
+            if (remaining === 0) {
+              list.innerHTML = '<p class="empty-state">No pending listings. You\'re all caught up.</p>';
+            }
+          }
+        } else {
+          const data = await res.json().catch(() => ({}));
+          if (msgEl) {
+            msgEl.textContent = (data as any).error ?? 'Error — try again.';
+            msgEl.hidden = false;
+          }
+          btn.disabled = false;
+          if (sibling) sibling.disabled = false;
+        }
+      } catch {
+        if (msgEl) {
+          msgEl.textContent = 'Network error — try again.';
+          msgEl.hidden = false;
+        }
+        btn.disabled = false;
+        if (sibling) sibling.disabled = false;
+      }
+    });
+  });
+</script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    color: #111827;
+    background: #f9fafb;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+  /* Header */
+  .site-header {
+    position: sticky; top: 0; z-index: 100;
+    background: #ffffff; border-bottom: 1px solid #f3f4f6;
+  }
+  .header-inner {
+    display: flex; align-items: center; justify-content: space-between; height: 60px;
+  }
+  .wordmark { font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em; }
+  .site-nav { display: flex; gap: 1.5rem; }
+  .site-nav a { font-size: 0.9rem; font-weight: 500; color: #6b7280; transition: color 0.15s; }
+  .site-nav a:hover { color: #111827; }
+
+  /* Main */
+  .main { min-height: calc(100vh - 60px - 180px); padding: 3rem 0 5rem; }
+
+  /* Password gate */
+  .gate-wrap {
+    max-width: 400px; margin: 4rem auto;
+    background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 2.5rem;
+  }
+  .gate-title { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .gate-sub { color: #6b7280; font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .gate-error {
+    background: #fef2f2; color: #dc2626; border: 1px solid #fecaca;
+    border-radius: 6px; padding: 0.6rem 0.9rem; font-size: 0.875rem; margin-bottom: 1rem;
+  }
+  .gate-label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.4rem; }
+  .gate-input {
+    display: block; width: 100%; padding: 0.6rem 0.75rem;
+    border: 1px solid #d1d5db; border-radius: 6px; font-size: 1rem; font-family: inherit;
+    margin-bottom: 1rem; outline: none; transition: border-color 0.15s;
+  }
+  .gate-input:focus { border-color: #111827; }
+  .btn-login {
+    display: block; width: 100%; padding: 0.7rem 1rem;
+    background: #111827; color: #fff; border: none; border-radius: 6px;
+    font-size: 0.9rem; font-weight: 600; font-family: inherit; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-login:hover { background: #1f2937; }
+
+  /* Queue */
+  .queue-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 2rem; }
+  .queue-title { font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em; }
+  .queue-count { font-size: 0.875rem; color: #6b7280; font-weight: 500; }
+  .empty-state { color: #6b7280; font-size: 1rem; padding: 3rem 0; }
+
+  /* Listing card */
+  .listing-card {
+    background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; margin-bottom: 1rem; overflow: hidden;
+  }
+  .card-top { padding: 1.25rem 1.5rem 1rem; }
+  .card-name-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+  .card-name { font-size: 1.125rem; font-weight: 700; }
+  .badge {
+    font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    background: #f3f4f6; color: #374151; border-radius: 4px; padding: 0.2rem 0.5rem;
+  }
+  .card-meta { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; font-size: 0.85rem; color: #6b7280; }
+  .meta-sep { color: #d1d5db; }
+  .tier-badge { font-size: 0.7rem; font-weight: 600; border-radius: 4px; padding: 0.2rem 0.5rem; }
+  .tier-badge--free { background: #f3f4f6; color: #374151; }
+  .tier-badge--paid { background: #eff6ff; color: #1d4ed8; }
+  .flag { font-size: 0.7rem; font-weight: 600; background: #ecfdf5; color: #065f46; border-radius: 4px; padding: 0.2rem 0.5rem; }
+
+  /* Card body */
+  .card-body {
+    padding: 1rem 1.5rem; border-top: 1px solid #f3f4f6;
+    display: flex; flex-direction: column; gap: 0.75rem;
+  }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .field { display: flex; flex-direction: column; gap: 0.2rem; }
+  .field-label {
+    font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #9ca3af;
+  }
+  .field-value { font-size: 0.9rem; color: #111827; }
+  .field-link { font-size: 0.9rem; color: #2563eb; word-break: break-all; }
+  .field-link:hover { text-decoration: underline; }
+
+  /* Card actions */
+  .card-actions {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.875rem 1.5rem; border-top: 1px solid #f3f4f6; background: #f9fafb;
+  }
+  .btn-approve, .btn-reject {
+    padding: 0.45rem 1.1rem; border-radius: 6px;
+    font-size: 0.875rem; font-weight: 600; font-family: inherit; cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+  }
+  .btn-approve:disabled, .btn-reject:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-approve { background: #16a34a; color: #fff; border: none; }
+  .btn-approve:hover:not(:disabled) { background: #15803d; }
+  .btn-reject { background: transparent; color: #dc2626; border: 1.5px solid #dc2626; }
+  .btn-reject:hover:not(:disabled) { background: #fef2f2; }
+  .action-msg { font-size: 0.8rem; color: #dc2626; }
+
+  /* Footer */
+  .site-footer { background: #111827; color: #9ca3af; padding: 3rem 0; }
+  .footer-inner { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; text-align: center; }
+  .footer-wordmark { font-size: 1.1rem; font-weight: 700; color: #fff; }
+  .footer-tagline { font-size: 0.875rem; }
+  .footer-links { display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; }
+  .footer-links a:hover { color: #fff; }
+  .footer-sep { color: #374151; }
+  .footer-copy { font-size: 0.8rem; color: #6b7280; }
+</style>
