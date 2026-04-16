@@ -24,14 +24,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const city       = typeof body.city       === 'string' ? body.city.trim()        || null : null;
   const birthMonth = body.birth_month ? (parseInt(String(body.birth_month), 10) || null) : null;
   const birthDay   = body.birth_day   ? (parseInt(String(body.birth_day),   10) || null) : null;
+  const source = typeof body.source === 'string' ? body.source.trim() || 'homepage' : 'homepage';
 
   const env = (locals as any).runtime.env;
   const sql = getDb(env.DATABASE_URL);
 
   try {
     await sql`
-      INSERT INTO subscribers (email, first_name, city, birth_month, birth_day)
-      VALUES (${email}, ${firstName}, ${city}, ${birthMonth}, ${birthDay})
+      INSERT INTO subscribers (email, first_name, city, birth_month, birth_day, source)
+      VALUES (${email}, ${firstName}, ${city}, ${birthMonth}, ${birthDay}, ${source})
       ON CONFLICT (email) DO NOTHING
     `;
   } catch (err) {
@@ -52,7 +53,11 @@ export const POST: APIRoute = async ({ request, locals }) => {
       body: JSON.stringify({
         email,
         ...(firstName ? { firstName } : {}),
-        tags: ['subscriber'],
+        tags: [
+          'gwinnett-newsletter',
+          ...(source ? [`source-${source}`] : []),
+          ...(birthMonth ? [`birth-month-${birthMonth}`] : []),
+        ],
       }),
     });
     if (!enchargeRes.ok) {
