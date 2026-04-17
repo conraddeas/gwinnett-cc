@@ -1,0 +1,978 @@
+---
+// Restaurants directory — Gwinnett.cc
+import { getDb } from '../lib/db';
+
+const env = (Astro.locals as any).runtime.env;
+const sql = getDb(env.DATABASE_URL);
+
+const listings = await sql`
+  SELECT id, business_name, slug, category, short_description, full_description,
+         city, website, directory_specific_data
+  FROM listings
+  WHERE directory = 'restaurants' AND status = 'approved'
+  ORDER BY featured_until DESC NULLS LAST, created_at DESC
+`;
+
+const CATEGORY_ORDER = [
+  'American & Southern', 'BBQ', 'Italian', 'Mexican & Latin', 'Korean',
+  'Vietnamese', 'Indian', 'Thai', 'Chinese', 'Japanese & Sushi',
+  'Mediterranean & Greek', 'Seafood', 'Caribbean', 'Pizza', 'Fast Casual', 'Other',
+];
+
+const categories = [...new Set(
+  listings.map((l: any) => l.category).filter(Boolean)
+)].sort((a: string, b: string) => {
+  const ai = CATEGORY_ORDER.indexOf(a);
+  const bi = CATEGORY_ORDER.indexOf(b);
+  if (ai === -1 && bi === -1) return a.localeCompare(b);
+  if (ai === -1) return 1;
+  if (bi === -1) return -1;
+  return ai - bi;
+}) as string[];
+
+const cities = [...new Set(
+  listings.map((l: any) => l.city).filter(Boolean)
+)].sort() as string[];
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Restaurants — Gwinnett.cc</title>
+  <meta name="description" content="Local dining across Gwinnett — from Downtown Lawrenceville to Duluth, Suwanee, and beyond." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body data-newsletter-source="restaurants">
+
+  <!-- ====== HEADER ====== -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="/" class="wordmark">Gwinnett.cc</a>
+      <nav class="site-nav">
+        <a href="/#directories">Directories</a>
+        <a href="/#newsletter">Newsletter</a>
+        <a href="/#contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ====== HERO ====== -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">Directory</p>
+      <h1 class="hero-headline">Restaurants</h1>
+      <p class="hero-sub">
+        Local dining across Gwinnett — from Downtown Lawrenceville to Duluth, Suwanee, and beyond.
+      </p>
+    </div>
+  </section>
+
+  <!-- ====== STATS STRIP ====== -->
+  <div class="stats-strip">
+    <div class="container stats-inner">
+      <div class="stat">
+        <span class="stat-value" id="stat-total">{listings.length}</span>
+        <span class="stat-label">Listings</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <span class="stat-value">{categories.length}</span>
+        <span class="stat-label">Categories</span>
+      </div>
+      <div class="stat-sep"></div>
+      <div class="stat">
+        <span class="stat-label stat-label--static">Serving Gwinnett County</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== SEARCH + FILTERS ====== -->
+  <section class="filters-section">
+    <div class="container">
+      <div class="search-row">
+        <div class="search-wrap">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="Search restaurants…"
+            autocomplete="off"
+          />
+        </div>
+      </div>
+      <div class="filter-pills" id="filter-pills">
+        <button class="pill pill--active" data-category="all">All</button>
+        {categories.map((cat) => (
+          <button class="pill" data-category={cat}>{cat}</button>
+        ))}
+      </div>
+      {cities.length > 0 && (
+        <div class="filter-pills" id="city-pills">
+          <button class="pill pill--active" data-city="all">All Cities</button>
+          {cities.map((city) => (
+            <button class="pill" data-city={city}>{city}</button>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- ====== LISTING GRID ====== -->
+  <section class="listings-section">
+    <div class="container">
+      <div class="listing-grid" id="listing-grid"></div>
+      <p class="no-results" id="no-results" hidden>
+        No restaurants match your search. Try a different term or category.
+      </p>
+      <div class="pagination" id="pagination"></div>
+    </div>
+  </section>
+
+  <!-- ====== SLIDEOUT PANEL ====== -->
+  <div class="slideout-overlay" id="slideout-overlay"></div>
+  <aside class="slideout" id="slideout">
+    <button class="slideout-close" id="slideout-close" aria-label="Close detail panel">&times;</button>
+    <div class="slideout-body" id="slideout-body"></div>
+  </aside>
+
+  <!-- ====== STICKY APPLY CTA ====== -->
+  <div class="sticky-cta">
+    <div class="container sticky-cta-inner">
+      <span class="sticky-cta-text">Own a local restaurant?</span>
+      <a href="/apply/restaurants" class="btn-apply">List Your Restaurant — It's Free</a>
+    </div>
+  </div>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="footer-wordmark">Gwinnett.cc</span>
+      <p class="footer-tagline">Community. Connections. Curated.</p>
+      <div class="footer-links">
+        <a href="mailto:hello@gwinnett.cc">hello@gwinnett.cc</a>
+        <span class="footer-sep">&middot;</span>
+        <a href="/privacy">Privacy</a>
+      </div>
+      <p class="footer-copy">&copy; {new Date().getFullYear()} Gwinnett.cc. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
+
+<!-- ====== DATA ====== -->
+<script is:inline define:vars={{ listings, categories }}>
+  /* ── State ── */
+  const PER_PAGE = 12;
+  let currentPage = 1;
+  let activeCategory = 'all';
+  let activeCity = 'all';
+  let searchTerm = '';
+
+  /* ── Helpers ── */
+  function getDsd(listing) {
+    const d = listing.directory_specific_data;
+    if (!d) return {};
+    return typeof d === 'string' ? JSON.parse(d) : d;
+  }
+
+  function getPhone(listing) {
+    return getDsd(listing).phone || null;
+  }
+
+  function getTags(listing) {
+    const tags = getDsd(listing).tags;
+    if (!tags || !Array.isArray(tags)) return [];
+    return tags.filter(Boolean);
+  }
+
+  function getBadges(listing) {
+    const dsd = getDsd(listing);
+    return {
+      locallyOwned: !!dsd.locally_owned,
+      veteranOwned: !!dsd.veteran_owned,
+    };
+  }
+
+  function filtered() {
+    const q = searchTerm.toLowerCase();
+    return listings.filter((l) => {
+      if (activeCategory !== 'all' && l.category !== activeCategory) return false;
+      if (activeCity !== 'all' && l.city !== activeCity) return false;
+      if (!q) return true;
+      const tags = getTags(l).join(' ').toLowerCase();
+      return (
+        l.business_name.toLowerCase().includes(q) ||
+        (l.short_description || '').toLowerCase().includes(q) ||
+        (l.category || '').toLowerCase().includes(q) ||
+        (l.city || '').toLowerCase().includes(q) ||
+        tags.includes(q)
+      );
+    });
+  }
+
+  /* ── Render cards ── */
+  function renderGrid() {
+    const items = filtered();
+    const grid = document.getElementById('listing-grid');
+    const noRes = document.getElementById('no-results');
+    const statTotal = document.getElementById('stat-total');
+    statTotal.textContent = items.length;
+
+    if (items.length === 0) {
+      grid.innerHTML = '';
+      noRes.hidden = false;
+      renderPagination(0);
+      return;
+    }
+    noRes.hidden = true;
+
+    const totalPages = Math.ceil(items.length / PER_PAGE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    const start = (currentPage - 1) * PER_PAGE;
+    const page = items.slice(start, start + PER_PAGE);
+
+    grid.innerHTML = page.map((l, i) => {
+      const tags = getTags(l);
+      const badges = getBadges(l);
+      const tagsHtml = tags.length
+        ? `<div class="lc-tags">${tags.map((t) => `<span class="lc-tag">${esc(t)}</span>`).join('')}</div>`
+        : '';
+      const badgeHtml = [
+        badges.locallyOwned ? '<span class="lc-badge lc-badge--local">Locally Owned</span>' : '',
+        badges.veteranOwned ? '<span class="lc-badge lc-badge--veteran">Veteran Owned</span>' : '',
+      ].filter(Boolean).join('');
+      return `
+        <button class="listing-card" data-index="${start + i}" type="button">
+          ${l.category ? `<span class="lc-category">${esc(l.category)}</span>` : ''}
+          <h3 class="lc-name">${esc(l.business_name)}</h3>
+          <p class="lc-desc">${esc(l.short_description || '')}</p>
+          ${tagsHtml}
+          ${l.city ? `<span class="lc-city">${esc(l.city)}</span>` : ''}
+          ${badgeHtml ? `<div class="lc-badges">${badgeHtml}</div>` : ''}
+        </button>`;
+    }).join('');
+
+    renderPagination(totalPages);
+
+    grid.querySelectorAll('.listing-card').forEach((card) => {
+      card.addEventListener('click', () => {
+        const idx = parseInt(card.getAttribute('data-index'), 10);
+        openSlideout(items[idx]);
+      });
+    });
+  }
+
+  /* ── Pagination ── */
+  function renderPagination(totalPages) {
+    const wrap = document.getElementById('pagination');
+    if (totalPages <= 1) { wrap.innerHTML = ''; return; }
+
+    let html = '';
+    html += `<button class="page-btn" data-page="prev" ${currentPage === 1 ? 'disabled' : ''}>&#8592; Prev</button>`;
+    for (let p = 1; p <= totalPages; p++) {
+      html += `<button class="page-btn ${p === currentPage ? 'page-btn--active' : ''}" data-page="${p}">${p}</button>`;
+    }
+    html += `<button class="page-btn" data-page="next" ${currentPage === totalPages ? 'disabled' : ''}>Next &#8594;</button>`;
+    wrap.innerHTML = html;
+
+    wrap.querySelectorAll('.page-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const v = btn.getAttribute('data-page');
+        if (v === 'prev') currentPage = Math.max(1, currentPage - 1);
+        else if (v === 'next') currentPage = Math.min(totalPages, currentPage + 1);
+        else currentPage = parseInt(v, 10);
+        renderGrid();
+        document.getElementById('listing-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+  }
+
+  /* ── Slideout ── */
+  function openSlideout(listing) {
+    const phone = getPhone(listing);
+    const tags = getTags(listing);
+    const badges = getBadges(listing);
+    const body = document.getElementById('slideout-body');
+
+    const badgeHtml = [
+      badges.locallyOwned ? '<span class="so-badge so-badge--local">Locally Owned</span>' : '',
+      badges.veteranOwned ? '<span class="so-badge so-badge--veteran">Veteran Owned</span>' : '',
+    ].filter(Boolean).join('');
+
+    const tagsHtml = tags.length
+      ? `<div class="so-section"><span class="so-section-label">Tags</span><div class="so-tags">${tags.map((t) => `<span class="so-tag">${esc(t)}</span>`).join('')}</div></div>`
+      : '';
+
+    let html = '';
+    if (listing.category) html += `<span class="so-category">${esc(listing.category)}</span>`;
+    html += `<h2 class="so-name">${esc(listing.business_name)}</h2>`;
+    if (listing.city) html += `<p class="so-city">${esc(listing.city)}</p>`;
+    if (badgeHtml) html += `<div class="so-badges">${badgeHtml}</div>`;
+    if (listing.full_description) html += `<div class="so-section"><span class="so-section-label">About</span><p>${esc(listing.full_description)}</p></div>`;
+    if (listing.website) html += `<div class="so-section"><span class="so-section-label">Website</span><p><a href="${esc(listing.website)}" target="_blank" rel="noopener">${esc(listing.website)}</a></p></div>`;
+    if (phone) html += `<div class="so-section"><span class="so-section-label">Phone</span><p><a href="tel:${esc(phone)}">${esc(phone)}</a></p></div>`;
+    html += tagsHtml;
+
+    body.innerHTML = html;
+
+    document.getElementById('slideout').classList.add('slideout--open');
+    document.getElementById('slideout-overlay').classList.add('slideout-overlay--visible');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSlideout() {
+    document.getElementById('slideout').classList.remove('slideout--open');
+    document.getElementById('slideout-overlay').classList.remove('slideout-overlay--visible');
+    document.body.style.overflow = '';
+  }
+
+  function esc(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  /* ── Events ── */
+  document.getElementById('search-input').addEventListener('input', (e) => {
+    searchTerm = e.target.value;
+    currentPage = 1;
+    renderGrid();
+  });
+
+  document.getElementById('filter-pills').addEventListener('click', (e) => {
+    const btn = e.target.closest('.pill');
+    if (!btn) return;
+    document.querySelectorAll('#filter-pills .pill').forEach((p) => p.classList.remove('pill--active'));
+    btn.classList.add('pill--active');
+    activeCategory = btn.getAttribute('data-category');
+    currentPage = 1;
+    renderGrid();
+  });
+
+  document.getElementById('city-pills')?.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pill');
+    if (!btn) return;
+    document.querySelectorAll('#city-pills .pill').forEach((p) => p.classList.remove('pill--active'));
+    btn.classList.add('pill--active');
+    activeCity = btn.getAttribute('data-city');
+    currentPage = 1;
+    renderGrid();
+  });
+
+  document.getElementById('slideout-close').addEventListener('click', closeSlideout);
+  document.getElementById('slideout-overlay').addEventListener('click', closeSlideout);
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeSlideout(); });
+
+  /* ── Init ── */
+  renderGrid();
+</script>
+
+<style>
+  /* ── Reset & base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 16px;
+    color: #111827;
+    background: #ffffff;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  [hidden] { display: none !important; }
+  button { cursor: pointer; font-family: inherit; }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #ffffff;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+  }
+
+  .wordmark {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: #111827;
+  }
+
+  .site-nav { display: flex; gap: 2rem; }
+
+  .site-nav a {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #374151;
+    transition: color 0.15s;
+  }
+  .site-nav a:hover { color: #111827; }
+
+  /* ── Hero ── */
+  .hero {
+    padding: 3.5rem 0 3rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-headline {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .hero-sub {
+    font-size: 1.125rem;
+    color: #6b7280;
+    max-width: 520px;
+    line-height: 1.6;
+  }
+
+  /* ── Stats strip ── */
+  .stats-strip {
+    background: #f9fafb;
+    border-bottom: 1px solid #f3f4f6;
+    padding: 1.25rem 0;
+  }
+
+  .stats-inner {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  .stat { display: flex; align-items: baseline; gap: 0.5rem; }
+
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .stat-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+
+  .stat-label--static {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .stat-sep {
+    width: 1px;
+    height: 24px;
+    background: #e5e7eb;
+  }
+
+  /* ── Search + filters ── */
+  .filters-section {
+    padding: 2rem 0 1.5rem;
+  }
+
+  .search-row {
+    margin-bottom: 1.25rem;
+  }
+
+  .search-wrap {
+    position: relative;
+    max-width: 420px;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: 0.65rem 0.875rem 0.65rem 2.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #111827;
+    background: #ffffff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17,24,39,0.06);
+  }
+
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .pill {
+    padding: 0.4rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 999px;
+    background: #ffffff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #374151;
+    transition: all 0.15s;
+  }
+
+  .pill:hover {
+    border-color: #d1d5db;
+    background: #f9fafb;
+  }
+
+  .pill--active {
+    background: #111827;
+    color: #ffffff;
+    border-color: #111827;
+  }
+  .pill--active:hover {
+    background: #1f2937;
+    border-color: #1f2937;
+  }
+
+  /* ── Listing grid ── */
+  .listings-section {
+    padding: 0 0 4rem;
+  }
+
+  .listing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  .listing-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+    text-align: left;
+    transition: box-shadow 0.15s, border-color 0.15s;
+  }
+
+  .listing-card:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border-color: #d1d5db;
+  }
+
+  .lc-category {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+  }
+
+  .lc-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .lc-desc {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex: 1;
+  }
+
+  .lc-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+  }
+
+  .lc-tag {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+  }
+
+  .lc-city {
+    font-size: 0.8rem;
+    color: #9ca3af;
+  }
+
+  .lc-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.25rem;
+  }
+
+  .lc-badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid;
+  }
+
+  .lc-badge--local {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fcd34d;
+  }
+
+  .lc-badge--veteran {
+    color: #1e3a5f;
+    background: #eff6ff;
+    border-color: #93c5fd;
+  }
+
+  .no-results {
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.95rem;
+    padding: 3rem 0;
+  }
+
+  /* ── Pagination ── */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+  }
+
+  .page-btn {
+    padding: 0.45rem 0.85rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #374151;
+    transition: all 0.15s;
+  }
+
+  .page-btn:hover:not(:disabled) {
+    background: #f9fafb;
+    border-color: #d1d5db;
+  }
+
+  .page-btn--active {
+    background: #111827;
+    color: #ffffff;
+    border-color: #111827;
+  }
+  .page-btn--active:hover {
+    background: #1f2937;
+  }
+
+  .page-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  /* ── Slideout ── */
+  .slideout-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 200;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+  }
+
+  .slideout-overlay--visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .slideout {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 440px;
+    max-width: 100%;
+    height: 100%;
+    background: #ffffff;
+    z-index: 210;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+  }
+
+  .slideout--open {
+    transform: translateX(0);
+  }
+
+  .slideout-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: #374151;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+  }
+  .slideout-close:hover { background: #e5e7eb; }
+
+  .slideout-body {
+    padding: 2.5rem 2rem 2rem;
+  }
+
+  .so-category {
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+    margin-bottom: 0.75rem;
+  }
+
+  .so-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.25rem;
+  }
+
+  .so-city {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin-bottom: 1rem;
+  }
+
+  .so-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .so-badge {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    border: 1px solid;
+  }
+
+  .so-badge--local {
+    color: #92400e;
+    background: #fffbeb;
+    border-color: #fcd34d;
+  }
+
+  .so-badge--veteran {
+    color: #1e3a5f;
+    background: #eff6ff;
+    border-color: #93c5fd;
+  }
+
+  .so-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .so-section-label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 0.35rem;
+  }
+
+  .so-section p {
+    font-size: 0.925rem;
+    color: #374151;
+    line-height: 1.6;
+  }
+
+  .so-section a {
+    color: #2563eb;
+    word-break: break-all;
+  }
+  .so-section a:hover { text-decoration: underline; }
+
+  .so-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .so-tag {
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #6b7280;
+    border: 1px solid #e5e7eb;
+  }
+
+  /* ── Sticky CTA ── */
+  .sticky-cta {
+    position: sticky;
+    bottom: 0;
+    z-index: 90;
+    background: #ffffff;
+    border-top: 1px solid #e5e7eb;
+    padding: 0.875rem 0;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.05);
+  }
+
+  .sticky-cta-inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .sticky-cta-text {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+  }
+
+  .btn-apply {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1.5rem;
+    background: #111827;
+    color: #ffffff;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .btn-apply:hover { background: #1f2937; }
+
+  /* ── Footer ── */
+  .site-footer {
+    background: #f9fafb;
+    border-top: 1px solid #f3f4f6;
+    padding: 3rem 0;
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .footer-wordmark {
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+  }
+
+  .footer-tagline {
+    font-size: 0.875rem;
+    color: #6b7280;
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+  }
+
+  .footer-links a {
+    color: #374151;
+    transition: color 0.15s;
+  }
+  .footer-links a:hover { color: #111827; }
+
+  .footer-sep { color: #d1d5db; }
+
+  .footer-copy {
+    font-size: 0.775rem;
+    color: #9ca3af;
+    margin-top: 0.25rem;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    .listing-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 2.5rem 0 2rem; }
+    .listing-grid { grid-template-columns: 1fr; }
+    .slideout { width: 100%; }
+    .site-nav { gap: 1.25rem; }
+    .sticky-cta-inner { flex-direction: column; gap: 0.5rem; }
+  }
+</style>
