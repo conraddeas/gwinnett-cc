@@ -57,12 +57,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   const fullDesc       = typeof body.full_description === 'string' ? body.full_description.trim() || null : null;
   const phone          = typeof body.phone            === 'string' ? body.phone.trim()            || null : null;
-  const locallyOwned   = body.locally_owned === true;
-  const veteranOwned   = body.veteran_owned === true;
   const tier           = body.tier === 'paid' ? 'paid' : 'free';
   const citiesServed   = body.cities_served
     ? (Array.isArray(body.cities_served) ? body.cities_served : [body.cities_served])
     : [];
+  const tags = body.tags
+    ? (Array.isArray(body.tags) ? body.tags : [body.tags])
+    : [];
+  const locallyOwned = body.locally_owned === true || body.locally_owned === 'true';
+  const veteranOwned = body.veteran_owned === true || body.veteran_owned === 'true';
   const licensedInsured = body.licensed_insured === 'true';
   const freeEstimate    = body.free_estimate    === 'true';
 
@@ -74,7 +77,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   const slug = generateSlug(businessName);
-  const directorySpecificData = { deal, phone, licensed_insured: licensedInsured, free_estimate: freeEstimate, cities_served: citiesServed };
+  const directorySpecificData = directory === 'restaurants'
+    ? { phone, tags, locally_owned: locallyOwned, veteran_owned: veteranOwned }
+    : { deal, phone, licensed_insured: licensedInsured, free_estimate: freeEstimate, cities_served: citiesServed };
 
   const env = (locals as any).runtime.env;
   const sql = getDb(env.DATABASE_URL);
