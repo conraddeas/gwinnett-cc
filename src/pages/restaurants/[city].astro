@@ -65,6 +65,7 @@ const cities = [...new Set(
   <!-- ====== HERO ====== -->
   <section class="hero">
     <div class="container">
+      <a href="/restaurants" class="back-link">← All Restaurants</a>
       <p class="hero-eyebrow">Directory</p>
       <h1 class="hero-headline">Restaurants</h1>
       <p class="hero-sub">
@@ -113,14 +114,6 @@ const cities = [...new Set(
           <button class="pill" data-category={cat}>{cat}</button>
         ))}
       </div>
-      {cities.length > 0 && (
-        <div class="filter-pills" id="city-pills">
-          <button class="pill pill--active" data-city="all">All Cities</button>
-          {cities.map((c) => (
-            <button class="pill city-pill" data-city={c.toLowerCase().replace(/\s+/g, '-')}>{c}</button>
-          ))}
-        </div>
-      )}
     </div>
   </section>
 
@@ -375,8 +368,8 @@ const cities = [...new Set(
   renderGrid();
 
   if (initialCity) {
-    const match = document.querySelector(`.city-pill[data-city="${initialCity}"]`);
-    if (match) match.click();
+    activeCity = initialCity;
+    renderGrid();
   }
 </script>
 
@@ -969,6 +962,16 @@ const cities = [...new Set(
     color: #9ca3af;
     margin-top: 0.25rem;
   }
+
+  .back-link {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 1.25rem;
+    transition: color 0.15s;
+  }
+  .back-link:hover { color: #111827; }
 
   /* ── Responsive ── */
   @media (max-width: 900px) {
