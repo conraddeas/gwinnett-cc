@@ -23,6 +23,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
+  const directory    = typeof body.directory         === 'string' ? body.directory.trim()         : 'birthday-deals';
   const businessName = typeof body.business_name     === 'string' ? body.business_name.trim()     : '';
   const website      = typeof body.website           === 'string' ? body.website.trim()           : '';
   const contactEmail = typeof body.contact_email     === 'string' ? body.contact_email.trim()     : '';
@@ -38,7 +39,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   if (!shortDesc)    missing.push('Short description');
   if (!category)     missing.push('Category');
   if (!city)         missing.push('City');
-  if (!deal)         missing.push('Deal / offer description');
+  if (directory === 'birthday-deals' && !deal) missing.push('Deal / offer description');
 
   if (missing.length > 0) {
     return new Response(
@@ -54,11 +55,16 @@ export const POST: APIRoute = async ({ request, locals }) => {
     );
   }
 
-  const fullDesc     = typeof body.full_description === 'string' ? body.full_description.trim() || null : null;
-  const phone        = typeof body.phone            === 'string' ? body.phone.trim()            || null : null;
-  const locallyOwned = body.locally_owned === true;
-  const veteranOwned = body.veteran_owned === true;
-  const tier         = body.tier === 'paid' ? 'paid' : 'free';
+  const fullDesc       = typeof body.full_description === 'string' ? body.full_description.trim() || null : null;
+  const phone          = typeof body.phone            === 'string' ? body.phone.trim()            || null : null;
+  const locallyOwned   = body.locally_owned === true;
+  const veteranOwned   = body.veteran_owned === true;
+  const tier           = body.tier === 'paid' ? 'paid' : 'free';
+  const citiesServed   = body.cities_served
+    ? (Array.isArray(body.cities_served) ? body.cities_served : [body.cities_served])
+    : [];
+  const licensedInsured = body.licensed_insured === 'true';
+  const freeEstimate    = body.free_estimate    === 'true';
 
   if (fullDesc && fullDesc.length > 300) {
     return new Response(
@@ -68,7 +74,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
   }
 
   const slug = generateSlug(businessName);
-  const directorySpecificData = { deal, ...(phone ? { phone } : {}) };
+  const directorySpecificData = { deal, phone, licensed_insured: licensedInsured, free_estimate: freeEstimate, cities_served: citiesServed };
 
   const env = (locals as any).runtime.env;
   const sql = getDb(env.DATABASE_URL);
@@ -81,7 +87,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         locally_owned, veteran_owned, tier, status,
         directory_specific_data
       ) VALUES (
-        'birthday-deals',
+        ${directory},
         ${businessName},
         ${slug},
         ${website},
