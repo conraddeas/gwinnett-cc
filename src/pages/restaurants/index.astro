@@ -1,6 +1,6 @@
 ---
 // Restaurants directory — Gwinnett.cc
-import { getDb } from '../lib/db';
+import { getDb } from '../../lib/db';
 
 const env = (Astro.locals as any).runtime.env;
 const sql = getDb(env.DATABASE_URL);
