@@ -5,6 +5,8 @@ import { getDb } from '../../lib/db';
 const env = (Astro.locals as any).runtime.env;
 const sql = getDb(env.DATABASE_URL);
 
+const { city } = Astro.params;
+
 const listings = await sql`
   SELECT id, business_name, slug, category, short_description, full_description,
          city, website, directory_specific_data
@@ -114,8 +116,8 @@ const cities = [...new Set(
       {cities.length > 0 && (
         <div class="filter-pills" id="city-pills">
           <button class="pill pill--active" data-city="all">All Cities</button>
-          {cities.map((city) => (
-            <button class="pill" data-city={city}>{city}</button>
+          {cities.map((c) => (
+            <button class="pill city-pill" data-city={c.toLowerCase().replace(/\s+/g, '-')}>{c}</button>
           ))}
         </div>
       )}
@@ -166,7 +168,7 @@ const cities = [...new Set(
 </html>
 
 <!-- ====== DATA ====== -->
-<script is:inline define:vars={{ listings, categories }}>
+<script is:inline define:vars={{ listings, initialCity: city ?? '' }}>
   /* ── State ── */
   const PER_PAGE = 12;
   let currentPage = 1;
@@ -203,7 +205,7 @@ const cities = [...new Set(
     const q = searchTerm.toLowerCase();
     return listings.filter((l) => {
       if (activeCategory !== 'all' && l.category !== activeCategory) return false;
-      if (activeCity !== 'all' && l.city !== activeCity) return false;
+      if (activeCity !== 'all' && (l.city || '').toLowerCase().replace(/\s+/g, '-') !== activeCity) return false;
       if (!q) return true;
       const tags = getTags(l).join(' ').toLowerCase();
       return (
@@ -371,6 +373,11 @@ const cities = [...new Set(
 
   /* ── Init ── */
   renderGrid();
+
+  if (initialCity) {
+    const match = document.querySelector(`.city-pill[data-city="${initialCity}"]`);
+    if (match) match.click();
+  }
 </script>
 
 <style is:global>
