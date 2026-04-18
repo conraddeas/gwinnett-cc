@@ -22,9 +22,7 @@ const { title, description } = Astro.props;
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-  <SiteHeader>
-    <slot name="nav" slot="nav" />
-  </SiteHeader>
+  <SiteHeader />
   <slot />
   <SiteFooter />
 </body>
