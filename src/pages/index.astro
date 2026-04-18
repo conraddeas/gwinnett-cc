@@ -1,31 +1,12 @@
 ---
 // Homepage — Gwinnett.cc
+import MainLayout from '../layouts/MainLayout.astro';
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gwinnett.cc — Community. Connections. Curated.</title>
-  <meta name="description" content="Gwinnett County's community hub — local resources, businesses, and connections." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-</head>
-<body>
-
-  <!-- ====== HEADER ====== -->
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="/" class="wordmark">Gwinnett.cc</a>
-      <nav class="site-nav">
-        <a href="#resources">Resources</a>
-        <a href="#contact">Contact</a>
-      </nav>
-    </div>
-  </header>
-
+<MainLayout
+  title="Gwinnett.cc — Community. Connections. Curated."
+  description="Gwinnett County's community hub — local resources, businesses, and connections."
+>
   <!-- ====== HERO ====== -->
   <section class="hero">
     <div class="container">
@@ -232,99 +213,9 @@
     </div>
   </section>
 
-  <!-- ====== FOOTER ====== -->
-  <footer class="site-footer" id="contact">
-    <div class="container footer-inner">
-      <span class="footer-wordmark">Gwinnett.cc</span>
-      <p class="footer-tagline">Community. Connections. Curated.</p>
-      <div class="footer-links">
-        <a href="mailto:hello@gwinnett.cc">hello@gwinnett.cc</a>
-        <span class="footer-sep">·</span>
-        <a href="/privacy">Privacy</a>
-      </div>
-      <p class="footer-copy">&copy; {new Date().getFullYear()} Gwinnett.cc. All rights reserved.</p>
-    </div>
-  </footer>
-
-</body>
-</html>
+</MainLayout>
 
 <style>
-  /* ── Reset & base ── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 16px;
-    color: #111827;
-    background: #ffffff;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  a { color: inherit; text-decoration: none; }
-  [hidden] { display: none !important; }
-
-  /* ── Layout ── */
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-  }
-
-  .section {
-    padding: 4rem 0;
-  }
-
-  .section-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin-bottom: 0.5rem;
-  }
-
-  .section-sub {
-    color: #6b7280;
-    font-size: 1rem;
-    margin-bottom: 2.5rem;
-  }
-
-  /* ── Header ── */
-  .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: #ffffff;
-    border-bottom: 1px solid #f3f4f6;
-  }
-
-  .header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-  }
-
-  .wordmark {
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    color: #111827;
-  }
-
-  .site-nav {
-    display: flex;
-    gap: 2rem;
-  }
-
-  .site-nav a {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #374151;
-    transition: color 0.15s;
-  }
-
-  .site-nav a:hover { color: #111827; }
-
   /* ── Hero ── */
   .hero {
     padding: 5rem 0 4rem;
@@ -369,9 +260,7 @@
     transition: box-shadow 0.15s, border-color 0.15s;
   }
 
-  .dir-card--active {
-    cursor: pointer;
-  }
+  .dir-card--active { cursor: pointer; }
 
   .dir-card--active:hover {
     box-shadow: 0 4px 16px rgba(0,0,0,0.08);
@@ -407,10 +296,7 @@
     border: 1px solid #e5e7eb;
   }
 
-  .card-icon {
-    font-size: 2rem;
-    line-height: 1;
-  }
+  .card-icon { font-size: 2rem; line-height: 1; }
 
   .card-title {
     font-size: 1rem;
@@ -464,9 +350,7 @@
     gap: 0.35rem;
   }
 
-  .form-field--submit {
-    justify-content: flex-end;
-  }
+  .form-field--submit { justify-content: flex-end; }
 
   .form-field label {
     font-size: 0.8rem;
@@ -474,11 +358,7 @@
     color: #374151;
   }
 
-  .optional, .required {
-    font-weight: 400;
-    color: #9ca3af;
-  }
-
+  .optional, .required { font-weight: 400; color: #9ca3af; }
   .required { color: #ef4444; }
 
   .form-field input,
@@ -552,15 +432,10 @@
     font-weight: 500;
   }
 
-  .success-icon {
-    font-size: 1.25rem;
-    color: #059669;
-  }
+  .success-icon { font-size: 1.25rem; color: #059669; }
 
   /* ── Resources ── */
-  .resources {
-    border-bottom: 1px solid #f3f4f6;
-  }
+  .resources { border-bottom: 1px solid #f3f4f6; }
 
   .resource-groups {
     display: grid;
@@ -597,9 +472,7 @@
   }
 
   /* ── Network ── */
-  .network {
-    border-bottom: 1px solid #f3f4f6;
-  }
+  .network { border-bottom: 1px solid #f3f4f6; }
 
   .member-grid {
     display: grid;
@@ -621,10 +494,7 @@
     background: #ffffff;
   }
 
-  .member-card--locked {
-    opacity: 0.45;
-    user-select: none;
-  }
+  .member-card--locked { opacity: 0.45; user-select: none; }
 
   .lock-overlay {
     position: absolute;
@@ -635,9 +505,7 @@
     border-radius: 12px;
   }
 
-  .lock-icon {
-    font-size: 1.5rem;
-  }
+  .lock-icon { font-size: 1.5rem; }
 
   .member-avatar {
     width: 52px;
@@ -653,21 +521,11 @@
     letter-spacing: 0.02em;
   }
 
-  .member-avatar--ghost {
-    background: #e5e7eb;
-  }
-
-  .member-name {
-    font-size: 0.95rem;
-    font-weight: 600;
-  }
+  .member-avatar--ghost { background: #e5e7eb; }
+  .member-name { font-size: 0.95rem; font-weight: 600; }
 
   .member-role,
-  .member-location {
-    font-size: 0.8rem;
-    color: #6b7280;
-    line-height: 1.4;
-  }
+  .member-location { font-size: 0.8rem; color: #6b7280; line-height: 1.4; }
 
   .ghost-line {
     height: 10px;
@@ -679,9 +537,7 @@
   .ghost-line--name { width: 80px; margin-bottom: 6px; }
   .ghost-line--role { width: 60px; }
 
-  .network-cta {
-    text-align: center;
-  }
+  .network-cta { text-align: center; }
 
   .btn-primary {
     display: inline-flex;
@@ -697,104 +553,21 @@
 
   .btn-primary:hover { background: #1f2937; }
 
-  /* ── Footer ── */
-  .site-footer {
-    background: #f9fafb;
-    border-top: 1px solid #f3f4f6;
-    padding: 3rem 0;
-  }
-
-  .footer-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    text-align: center;
-  }
-
-  .footer-wordmark {
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-
-  .footer-tagline {
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-
-  .footer-links {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    margin-top: 0.25rem;
-  }
-
-  .footer-links a {
-    color: #374151;
-    transition: color 0.15s;
-  }
-
-  .footer-links a:hover { color: #111827; }
-
-  .footer-sep { color: #d1d5db; }
-
-  .footer-copy {
-    font-size: 0.775rem;
-    color: #9ca3af;
-    margin-top: 0.25rem;
-  }
-
   /* ── Responsive ── */
   @media (max-width: 900px) {
-    .card-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .newsletter-inner {
-      grid-template-columns: 1fr;
-      gap: 1.75rem;
-    }
-
-    .resource-groups {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .member-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+    .card-grid { grid-template-columns: repeat(2, 1fr); }
+    .newsletter-inner { grid-template-columns: 1fr; gap: 1.75rem; }
+    .resource-groups { grid-template-columns: repeat(2, 1fr); }
+    .member-grid { grid-template-columns: repeat(2, 1fr); }
   }
 
   @media (max-width: 600px) {
-    .section { padding: 3rem 0; }
-
     .hero { padding: 3.5rem 0 3rem; }
-
-    .hero-headline {
-      font-size: 2.5rem;
-    }
-
-    .card-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .form-row {
-      grid-template-columns: 1fr;
-    }
-
-    .resource-groups {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-
-    .member-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .site-nav {
-      gap: 1.25rem;
-    }
+    .hero-headline { font-size: 2.5rem; }
+    .card-grid { grid-template-columns: repeat(2, 1fr); }
+    .form-row { grid-template-columns: 1fr; }
+    .resource-groups { grid-template-columns: 1fr; gap: 2rem; }
+    .member-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 

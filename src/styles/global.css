@@ -1,0 +1,130 @@
+/* ── Reset & base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  color: #111827;
+  background: #ffffff;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: inherit; text-decoration: none; }
+[hidden] { display: none !important; }
+button { cursor: pointer; font-family: inherit; }
+
+/* ── Layout ── */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.section { padding: 4rem 0; }
+
+.section-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.section-sub {
+  color: #6b7280;
+  font-size: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+/* ── Header ── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #ffffff;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.wordmark {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #111827;
+}
+
+.site-nav { display: flex; gap: 2rem; }
+
+.site-nav a {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #374151;
+  transition: color 0.15s;
+}
+
+.site-nav a:hover { color: #111827; }
+
+.site-nav .nav-subscribe {
+  background: #111827;
+  color: #ffffff;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.site-nav .nav-subscribe:hover {
+  background: #1f2937;
+  color: #ffffff;
+}
+
+/* ── Footer ── */
+.site-footer {
+  background: #f9fafb;
+  border-top: 1px solid #f3f4f6;
+  padding: 3rem 0;
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.footer-wordmark {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.footer-tagline { font-size: 0.875rem; color: #6b7280; }
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.footer-links a { color: #374151; transition: color 0.15s; }
+.footer-links a:hover { color: #111827; }
+.footer-sep { color: #d1d5db; }
+
+.footer-copy {
+  font-size: 0.775rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .section { padding: 3rem 0; }
+  .site-nav { gap: 1.25rem; }
+}
