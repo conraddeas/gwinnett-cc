@@ -1,9 +1,19 @@
 ---
+// SiteHeader — Gwinnett.cc Unified Menu
 ---
 <header class="site-header">
   <div class="container header-inner">
     <a href="/" class="wordmark">Gwinnett.cc</a>
-    <nav class="site-nav">
+    
+    <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+
+    <nav class="site-nav" id="site-nav">
       <a href="/birthday-deals">Birthday Deals</a>
       <a href="/home-services">Home Services</a>
       <a href="/restaurants">Restaurants</a>
@@ -12,3 +22,12 @@
     </nav>
   </div>
 </header>
+
+<script>
+  const toggle = document.getElementById('mobile-menu-toggle');
+  const nav = document.getElementById('site-nav');
+  
+  toggle?.addEventListener('click', () => {
+    nav?.classList.toggle('site-nav--open');
+  });
+</script>

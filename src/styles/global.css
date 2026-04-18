@@ -44,6 +44,15 @@ button { cursor: pointer; font-family: inherit; }
   border-bottom: 1px solid #f3f4f6;
 }
 
+.mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  color: #111827;
+  cursor: pointer;
+}
+
 .header-inner {
   display: flex;
   align-items: center;
@@ -127,4 +136,29 @@ button { cursor: pointer; font-family: inherit; }
 @media (max-width: 600px) {
   .section { padding: 3rem 0; }
   .site-nav { gap: 1.25rem; }
+}
+
+@media (max-width: 900px) {
+  .mobile-menu-toggle {
+    display: block;
+  }
+  
+  .site-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #ffffff;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem 0 2rem;
+    gap: 1.5rem;
+    border-bottom: 1px solid #f3f4f6;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+  }
+  
+  .site-nav--open {
+    display: flex;
+  }
 }
