@@ -1,0 +1,307 @@
+```astro
+---
+import MainLayout from '../layouts/MainLayout.astro';
+---
+
+<MainLayout 
+  title="Advertise & Partner — Gwinnett.cc" 
+  description="Reach Gwinnett County locals where they are. Partner with the Gwinnett.cc network for featured directory listings and weekly newsletter sponsorships."
+>
+  <section class="hero">
+    <div class="container">
+      <p class="hero-eyebrow">Partner With Us</p>
+      <h1 class="hero-headline">Reach Gwinnett County Locals.</h1>
+      <p class="hero-sub">
+        Put your business in front of residents actively looking for local dining, home services, and community deals across Gwinnett County.
+      </p>
+    </div>
+  </section>
+
+  <section class="section opps-section">
+    <div class="container">
+      <h2 class="section-title">Partnership Opportunities</h2>
+      <p class="section-sub">Two ways to get your business in front of the community.</p>
+
+      <div class="opps-grid">
+        <div class="opp-card">
+          <span class="opp-icon">⭐</span>
+          <h3 class="opp-title">Featured Directory Listings</h3>
+          <p class="opp-desc">
+            Upgrade your free directory listing to a Premium tier. Featured listings appear at the top of their respective categories, include a "Featured Partner" badge, and allow for expanded details on the slideout panel.
+          </p>
+        </div>
+
+        <div class="opp-card">
+          <span class="opp-icon">💌</span>
+          <h3 class="opp-title">Newsletter Sponsorships</h3>
+          <p class="opp-desc">
+            Sponsor the weekly Gwinnett.cc newsletter. Secure the exclusive "Spotlight" slot to get your business, special offer, or event delivered directly to the inboxes of engaged Gwinnett locals.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section contact-section" id="contact-form-section">
+    <div class="container contact-inner">
+      <div class="contact-copy">
+        <h2 class="section-title">Request Rates & Availability</h2>
+        <p class="contact-sub">
+          Fill out the form below to let us know what you're looking for. We'll get back to you with current availability, pricing, and next steps.
+        </p>
+      </div>
+
+      <div class="contact-form-wrap">
+        <form id="advertise-form" class="advertise-form" novalidate>
+          <div class="form-row">
+            <div class="form-field">
+              <label for="name">Your Name <span class="required">*</span></label>
+              <input type="text" id="name" name="name" placeholder="Jane Doe" required />
+            </div>
+            <div class="form-field">
+              <label for="business">Business Name <span class="required">*</span></label>
+              <input type="text" id="business" name="business" placeholder="Jane's Bakery" required />
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-field">
+              <label for="email">Email Address <span class="required">*</span></label>
+              <input type="email" id="email" name="email" placeholder="jane@example.com" required />
+            </div>
+            <div class="form-field">
+              <label for="interest">Primary Interest <span class="required">*</span></label>
+              <select id="interest" name="interest" required>
+                <option value="">Select an option...</option>
+                <option value="Featured Listing">Featured Directory Listing</option>
+                <option value="Newsletter Sponsorship">Newsletter Sponsorship</option>
+                <option value="Both">Both</option>
+                <option value="Other">Other / General Inquiry</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="message">Message <span class="optional">(optional)</span></label>
+            <textarea id="message" name="message" rows="4" placeholder="Tell us a bit about your goals..."></textarea>
+          </div>
+
+          <div class="form-field form-field--submit">
+            <button type="submit" class="btn-submit">Submit Inquiry</button>
+          </div>
+          <p id="form-error" class="form-msg form-msg--error" hidden></p>
+        </form>
+
+        <div id="form-success" class="form-success" hidden>
+          <span class="success-icon">✓</span>
+          <p>Thanks for reaching out! We've received your inquiry and will be in touch shortly.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</MainLayout>
+
+<script>
+  const form = document.getElementById('advertise-form') as HTMLFormElement;
+  const errorEl = document.getElementById('form-error') as HTMLElement;
+  const successEl = document.getElementById('form-success') as HTMLElement;
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorEl.hidden = true;
+
+    // Basic validation
+    const name = form.querySelector<HTMLInputElement>('#name')?.value.trim();
+    const business = form.querySelector<HTMLInputElement>('#business')?.value.trim();
+    const email = form.querySelector<HTMLInputElement>('#email')?.value.trim();
+    const interest = form.querySelector<HTMLSelectElement>('#interest')?.value;
+    
+    if (!name || !business || !email || !interest) {
+      errorEl.textContent = 'Please fill out all required fields.';
+      errorEl.hidden = false;
+      return;
+    }
+
+    const submitBtn = form.querySelector<HTMLButtonElement>('.btn-submit');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting…';
+    }
+
+    const body = {
+      name,
+      business,
+      email,
+      interest,
+      message: form.querySelector<HTMLTextAreaElement>('#message')?.value.trim() || undefined,
+    };
+
+    try {
+      // NOTE: Pointing to a new endpoint we need to create
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (res.ok) {
+        form.hidden = true;
+        successEl.hidden = false;
+      } else {
+        let msg = 'Something went wrong. Please try again.';
+        try {
+          const data = await res.json();
+          if (data?.message) msg = data.message;
+        } catch {}
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Submit Inquiry';
+        }
+      }
+    } catch {
+      errorEl.textContent = 'Network error — please check your connection and try again.';
+      errorEl.hidden = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Inquiry';
+      }
+    }
+  });
+</script>
+
+<style>
+  /* ── Hero ── */
+  .hero {
+    padding: 4rem 0 3.5rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .hero-eyebrow {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 0.75rem;
+  }
+
+  .hero-headline {
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    max-width: 800px;
+  }
+
+  .hero-sub {
+    font-size: 1.125rem;
+    color: #6b7280;
+    max-width: 580px;
+    line-height: 1.6;
+  }
+
+  /* ── Opportunities ── */
+  .opps-section {
+    border-bottom: 1px solid #f3f4f6;
+  }
+
+  .opps-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .opp-card {
+    padding: 2rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+  }
+
+  .opp-icon {
+    display: block;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .opp-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.01em;
+  }
+
+  .opp-desc {
+    font-size: 0.95rem;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  /* ── Contact Form ── */
+  .contact-section {
+    background: #f9fafb;
+  }
+
+  .contact-inner {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 4rem;
+    align-items: start;
+  }
+
+  .contact-sub {
+    color: #6b7280;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-top: 0.75rem;
+  }
+
+  .advertise-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  }
+
+  .advertise-form textarea {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #111827;
+    resize: vertical;
+    width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .advertise-form textarea:focus {
+    outline: none;
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17,24,39,0.06);
+  }
+
+  @media (max-width: 900px) {
+    .opps-grid {
+      grid-template-columns: 1fr;
+    }
+    .contact-inner {
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero { padding: 2.5rem 0 2rem; }
+    .advertise-form { padding: 1.5rem; }
+  }
+</style>

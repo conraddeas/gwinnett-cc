@@ -1,5 +1,5 @@
 ---
-import MainLayout from '../../layouts/MainLayout.astro';
+import MainLayout from '../layouts/MainLayout.astro';
 // Admin review queue — Gwinnett.cc
 import { getDb } from '../../lib/db';
 
@@ -44,8 +44,12 @@ const sessionValue = getCookie(cookieHeader, 'admin_session');
 const isAuthed = !!env.ADMIN_PASSWORD && !!sessionValue && sessionValue === env.ADMIN_PASSWORD;
 
 let listings: any[] = [];
+let inquiries: any[] = [];
+
 if (isAuthed) {
   const sql = getDb(env.DATABASE_URL);
+  
+  // 1. Fetch pending listings
   listings = await sql`
     SELECT id, business_name, directory, category, city, short_description,
            directory_specific_data, website, contact_email, tier,
@@ -54,11 +58,18 @@ if (isAuthed) {
     WHERE status = 'pending'
     ORDER BY created_at ASC
   `;
+
+  // 2. Fetch pending partner inquiries
+  inquiries = await sql`
+    SELECT id, name, business_name, email, interest, message, created_at
+    FROM partner_inquiries
+    WHERE status = 'pending'
+    ORDER BY created_at ASC
+  `;
 }
 ---
 
 <MainLayout title="Admin Dashboard — Gwinnett.cc" description="Admin review queue.">
-
   <main class="main">
     <div class="container">
 
@@ -83,92 +94,152 @@ if (isAuthed) {
           </form>
         </div>
       ) : (
-        <div class="queue-wrap">
-          <div class="queue-header">
-            <h1 class="queue-title">Pending Listings</h1>
-            <span class="queue-count" id="queue-count">{listings.length} pending</span>
+        <>
+          <div class="queue-wrap">
+            <div class="queue-header">
+              <h1 class="queue-title">Pending Listings</h1>
+              <span class="queue-count" id="queue-count">{listings.length} pending</span>
+            </div>
+
+            {listings.length === 0 ? (
+              <p class="empty-state">No pending listings. You're all caught up.</p>
+            ) : (
+              <div class="listing-list" id="listing-list">
+                {listings.map((l: any) => {
+                  const dsd = l.directory_specific_data ?? {};
+                  const deal: string = dsd.deal ?? '';
+                  const createdAt = new Date(l.created_at).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric',
+                  });
+                  return (
+                    <div class="listing-card" data-id={l.id}>
+                      <div class="card-top">
+                        <div class="card-name-row">
+                          <span class="card-name">{l.business_name}</span>
+                          <span class="badge">{l.directory}</span>
+                        </div>
+                        <div class="card-meta">
+                          <span class="meta-item">{l.category}</span>
+                          <span class="meta-sep">·</span>
+                          <span class="meta-item">{l.city}</span>
+                          <span class="meta-sep">·</span>
+                          <span class={`tier-badge tier-badge--${l.tier}`}>{l.tier}</span>
+                          {l.locally_owned && <span class="flag">Locally Owned</span>}
+                          {l.veteran_owned && <span class="flag">Veteran Owned</span>}
+                        </div>
+                      </div>
+
+                      <div class="card-body">
+                        <div class="field">
+                          <span class="field-label">Short description</span>
+                          <span class="field-value">{l.short_description}</span>
+                        </div>
+                        {deal && (
+                          <div class="field">
+                            <span class="field-label">Deal</span>
+                            <span class="field-value">{deal}</span>
+                          </div>
+                        )}
+                        <div class="field-row">
+                          <div class="field">
+                            <span class="field-label">Website</span>
+                            <a href={l.website} target="_blank" rel="noopener noreferrer" class="field-link">
+                              {l.website}
+                            </a>
+                          </div>
+                          <div class="field">
+                            <span class="field-label">Contact email</span>
+                            <span class="field-value">{l.contact_email}</span>
+                          </div>
+                        </div>
+                        <div class="field">
+                          <span class="field-label">Submitted</span>
+                          <span class="field-value">{createdAt}</span>
+                        </div>
+                      </div>
+
+                      <div class="card-actions">
+                        <button class="btn-approve" data-action="approve" data-id={l.id}>
+                          Approve
+                        </button>
+                        <button class="btn-reject" data-action="reject" data-id={l.id}>
+                          Reject
+                        </button>
+                        <span class="action-msg" hidden></span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          {listings.length === 0 ? (
-            <p class="empty-state">No pending listings. You're all caught up.</p>
-          ) : (
-            <div class="listing-list" id="listing-list">
-              {listings.map((l: any) => {
-                const dsd = l.directory_specific_data ?? {};
-                const deal: string = dsd.deal ?? '';
-                const createdAt = new Date(l.created_at).toLocaleDateString('en-US', {
-                  month: 'short', day: 'numeric', year: 'numeric',
-                });
-                return (
-                  <div class="listing-card" data-id={l.id}>
-                    <div class="card-top">
-                      <div class="card-name-row">
-                        <span class="card-name">{l.business_name}</span>
-                        <span class="badge">{l.directory}</span>
-                      </div>
-                      <div class="card-meta">
-                        <span class="meta-item">{l.category}</span>
-                        <span class="meta-sep">·</span>
-                        <span class="meta-item">{l.city}</span>
-                        <span class="meta-sep">·</span>
-                        <span class={`tier-badge tier-badge--${l.tier}`}>{l.tier}</span>
-                        {l.locally_owned && <span class="flag">Locally Owned</span>}
-                        {l.veteran_owned && <span class="flag">Veteran Owned</span>}
-                      </div>
-                    </div>
-
-                    <div class="card-body">
-                      <div class="field">
-                        <span class="field-label">Short description</span>
-                        <span class="field-value">{l.short_description}</span>
-                      </div>
-                      {deal && (
-                        <div class="field">
-                          <span class="field-label">Deal</span>
-                          <span class="field-value">{deal}</span>
-                        </div>
-                      )}
-                      <div class="field-row">
-                        <div class="field">
-                          <span class="field-label">Website</span>
-                          <a href={l.website} target="_blank" rel="noopener noreferrer" class="field-link">
-                            {l.website}
-                          </a>
-                        </div>
-                        <div class="field">
-                          <span class="field-label">Contact email</span>
-                          <span class="field-value">{l.contact_email}</span>
-                        </div>
-                      </div>
-                      <div class="field">
-                        <span class="field-label">Submitted</span>
-                        <span class="field-value">{createdAt}</span>
-                      </div>
-                    </div>
-
-                    <div class="card-actions">
-                      <button class="btn-approve" data-action="approve" data-id={l.id}>
-                        Approve
-                      </button>
-                      <button class="btn-reject" data-action="reject" data-id={l.id}>
-                        Reject
-                      </button>
-                      <span class="action-msg" hidden></span>
-                    </div>
-                  </div>
-                );
-              })}
+          <div class="queue-wrap" style="margin-top: 4rem;">
+            <div class="queue-header">
+              <h1 class="queue-title">Partner Inquiries</h1>
+              <span class="queue-count" id="inquiry-count">{inquiries.length} pending</span>
             </div>
-          )}
-        </div>
+
+            {inquiries.length === 0 ? (
+              <p class="empty-state">No pending inquiries.</p>
+            ) : (
+              <div class="listing-list" id="inquiry-list">
+                {inquiries.map((iq: any) => {
+                  const createdAt = new Date(iq.created_at).toLocaleDateString('en-US', {
+                    month: 'short', day: 'numeric', year: 'numeric',
+                  });
+                  return (
+                    <div class="listing-card inquiry-card" data-id={iq.id}>
+                      <div class="card-top">
+                        <div class="card-name-row">
+                          <span class="card-name">{iq.business_name}</span>
+                          <span class="badge" style="background: #e0e7ff; color: #4f46e5;">Inquiry</span>
+                        </div>
+                        <div class="card-meta">
+                          <span class="meta-item">{iq.name}</span>
+                          <span class="meta-sep">·</span>
+                          <span class="meta-item">{iq.email}</span>
+                        </div>
+                      </div>
+
+                      <div class="card-body">
+                        <div class="field">
+                          <span class="field-label">Primary Interest</span>
+                          <span class="field-value" style="font-weight:600;">{iq.interest}</span>
+                        </div>
+                        {iq.message && (
+                          <div class="field">
+                            <span class="field-label">Message</span>
+                            <span class="field-value">{iq.message}</span>
+                          </div>
+                        )}
+                        <div class="field">
+                          <span class="field-label">Submitted</span>
+                          <span class="field-value">{createdAt}</span>
+                        </div>
+                      </div>
+
+                      <div class="card-actions">
+                        <button class="btn-archive" data-action="archive" data-id={iq.id} style="background: #4b5563; color: white; padding: 0.45rem 1.1rem; border-radius: 6px; font-weight: 600; border: none; cursor: pointer;">
+                          Archive
+                        </button>
+                        <span class="inquiry-action-msg" hidden style="font-size: 0.8rem; color: #dc2626; margin-left: 0.75rem;"></span>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </>
       )}
 
     </div>
   </main>
-
 </MainLayout>
 
 <script>
+  // -- 1. Existing Listings Review Logic --
   document.querySelectorAll<HTMLButtonElement>('.btn-approve, .btn-reject').forEach(btn => {
     btn.addEventListener('click', async () => {
       const action = btn.dataset.action as 'approve' | 'reject';
@@ -216,6 +287,54 @@ if (isAuthed) {
         }
         btn.disabled = false;
         if (sibling) sibling.disabled = false;
+      }
+    });
+  });
+
+  // -- 2. NEW: Partner Inquiry Archive Logic --
+  document.querySelectorAll<HTMLButtonElement>('.btn-archive').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const id = btn.dataset.id;
+      const card = btn.closest<HTMLElement>('.inquiry-card');
+      const msgEl = card?.querySelector<HTMLElement>('.inquiry-action-msg');
+
+      btn.disabled = true;
+      btn.textContent = 'Archiving...';
+
+      try {
+        const res = await fetch(`/api/admin/archive-inquiry`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id }),
+        });
+
+        if (res.ok) {
+          card?.remove();
+          const countEl = document.getElementById('inquiry-count');
+          const list = document.getElementById('inquiry-list');
+          if (countEl && list) {
+            const remaining = list.querySelectorAll('.inquiry-card').length;
+            countEl.textContent = `${remaining} pending`;
+            if (remaining === 0) {
+              list.innerHTML = '<p class="empty-state">No pending inquiries.</p>';
+            }
+          }
+        } else {
+          const data = await res.json().catch(() => ({}));
+          if (msgEl) {
+            msgEl.textContent = (data as any).error ?? 'Error — try again.';
+            msgEl.hidden = false;
+          }
+          btn.disabled = false;
+          btn.textContent = 'Archive';
+        }
+      } catch {
+        if (msgEl) {
+          msgEl.textContent = 'Network error — try again.';
+          msgEl.hidden = false;
+        }
+        btn.disabled = false;
+        btn.textContent = 'Archive';
       }
     });
   });
@@ -276,8 +395,7 @@ if (isAuthed) {
 
   /* Card body */
   .card-body {
-    padding: 1rem 1.5rem; border-top: 1px solid #f3f4f6;
-    display: flex; flex-direction: column; gap: 0.75rem;
+    padding: 1rem 1.5rem; border-top: 1px solid #f3f4f6; display: flex; flex-direction: column; gap: 0.75rem;
   }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
   .field { display: flex; flex-direction: column; gap: 0.2rem; }
@@ -290,8 +408,7 @@ if (isAuthed) {
 
   /* Card actions */
   .card-actions {
-    display: flex; align-items: center; gap: 0.75rem;
-    padding: 0.875rem 1.5rem; border-top: 1px solid #f3f4f6; background: #f9fafb;
+    display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1.5rem; border-top: 1px solid #f3f4f6; background: #f9fafb;
   }
   .btn-approve, .btn-reject {
     padding: 0.45rem 1.1rem; border-radius: 6px;
