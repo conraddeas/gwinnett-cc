@@ -69,6 +69,19 @@ button { cursor: pointer; font-family: inherit; }
 
 .site-nav a:hover { color: #111827; }
 
+.site-nav .nav-subscribe {
+  background: #111827;
+  color: #ffffff;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.site-nav .nav-subscribe:hover {
+  background: #1f2937;
+  color: #ffffff;
+}
+
 /* ── Footer ── */
 .site-footer {
   background: #f9fafb;
