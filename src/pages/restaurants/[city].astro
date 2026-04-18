@@ -1,11 +1,16 @@
 ---
 // Restaurants directory — Gwinnett.cc
+import MainLayout from '../../layouts/MainLayout.astro';
 import { getDb } from '../../lib/db';
 
 const env = (Astro.locals as any).runtime.env;
 const sql = getDb(env.DATABASE_URL);
 
 const { city } = Astro.params;
+
+const cityName = city
+  ? city.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  : 'Restaurants';
 
 const listings = await sql`
   SELECT id, business_name, slug, category, short_description, full_description,
@@ -37,30 +42,10 @@ const cities = [...new Set(
 )].sort() as string[];
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Restaurants — Gwinnett.cc</title>
-  <meta name="description" content="Local dining across Gwinnett — from Downtown Lawrenceville to Duluth, Suwanee, and beyond." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-</head>
-<body data-newsletter-source="restaurants">
-
-  <!-- ====== HEADER ====== -->
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="/" class="wordmark">Gwinnett.cc</a>
-      <nav class="site-nav">
-        <a href="/#directories">Directories</a>
-        <a href="/#newsletter">Newsletter</a>
-        <a href="/#contact">Contact</a>
-      </nav>
-    </div>
-  </header>
+<MainLayout
+  title={`${cityName} Restaurants — Gwinnett.cc`}
+  description="Local dining across Gwinnett County."
+>
 
   <!-- ====== HERO ====== -->
   <section class="hero">
@@ -143,22 +128,7 @@ const cities = [...new Set(
     </div>
   </div>
 
-  <!-- ====== FOOTER ====== -->
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <span class="footer-wordmark">Gwinnett.cc</span>
-      <p class="footer-tagline">Community. Connections. Curated.</p>
-      <div class="footer-links">
-        <a href="mailto:hello@gwinnett.cc">hello@gwinnett.cc</a>
-        <span class="footer-sep">&middot;</span>
-        <a href="/privacy">Privacy</a>
-      </div>
-      <p class="footer-copy">&copy; {new Date().getFullYear()} Gwinnett.cc. All rights reserved.</p>
-    </div>
-  </footer>
-
-</body>
-</html>
+</MainLayout>
 
 <!-- ====== DATA ====== -->
 <script is:inline define:vars={{ listings, initialCity: city ?? '' }}>
@@ -374,60 +344,6 @@ const cities = [...new Set(
 </script>
 
 <style is:global>
-  /* ── Reset & base ── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 16px;
-    color: #111827;
-    background: #ffffff;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  a { color: inherit; text-decoration: none; }
-  [hidden] { display: none !important; }
-  button { cursor: pointer; font-family: inherit; }
-
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-  }
-
-  /* ── Header ── */
-  .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: #ffffff;
-    border-bottom: 1px solid #f3f4f6;
-  }
-
-  .header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-  }
-
-  .wordmark {
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    color: #111827;
-  }
-
-  .site-nav { display: flex; gap: 2rem; }
-
-  .site-nav a {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #374151;
-    transition: color 0.15s;
-  }
-  .site-nav a:hover { color: #111827; }
-
   /* ── Hero ── */
   .hero {
     padding: 3.5rem 0 3rem;
@@ -458,57 +374,37 @@ const cities = [...new Set(
     line-height: 1.6;
   }
 
-  /* ── Stats strip ── */
-  .stats-strip {
-    background: #f9fafb;
-    border-bottom: 1px solid #f3f4f6;
-    padding: 1.25rem 0;
+  .back-link {
+    display: inline-block;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6b7280;
+    margin-bottom: 1.25rem;
+    transition: color 0.15s;
   }
+  .back-link:hover { color: #111827; }
 
-  .stats-inner {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-  }
+  /* ── Stats strip ── */
+  .stats-strip { background: #f9fafb; border-bottom: 1px solid #f3f4f6; padding: 1.25rem 0; }
+
+  .stats-inner { display: flex; align-items: center; gap: 2rem; }
 
   .stat { display: flex; align-items: baseline; gap: 0.5rem; }
 
-  .stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #111827;
-  }
+  .stat-value { font-size: 1.5rem; font-weight: 700; color: #111827; }
 
-  .stat-label {
-    font-size: 0.85rem;
-    color: #6b7280;
-  }
+  .stat-label { font-size: 0.85rem; color: #6b7280; }
 
-  .stat-label--static {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #374151;
-  }
+  .stat-label--static { font-size: 0.85rem; font-weight: 600; color: #374151; }
 
-  .stat-sep {
-    width: 1px;
-    height: 24px;
-    background: #e5e7eb;
-  }
+  .stat-sep { width: 1px; height: 24px; background: #e5e7eb; }
 
   /* ── Search + filters ── */
-  .filters-section {
-    padding: 2rem 0 1.5rem;
-  }
+  .filters-section { padding: 2rem 0 1.5rem; }
 
-  .search-row {
-    margin-bottom: 1.25rem;
-  }
+  .search-row { margin-bottom: 1.25rem; }
 
-  .search-wrap {
-    position: relative;
-    max-width: 420px;
-  }
+  .search-wrap { position: relative; max-width: 420px; }
 
   .search-icon {
     position: absolute;
@@ -537,12 +433,7 @@ const cities = [...new Set(
     box-shadow: 0 0 0 3px rgba(17,24,39,0.06);
   }
 
-  .filter-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
+  .filter-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
 
   .pill {
     padding: 0.4rem 1rem;
@@ -555,25 +446,13 @@ const cities = [...new Set(
     transition: all 0.15s;
   }
 
-  .pill:hover {
-    border-color: #d1d5db;
-    background: #f9fafb;
-  }
+  .pill:hover { border-color: #d1d5db; background: #f9fafb; }
 
-  .pill--active {
-    background: #111827;
-    color: #ffffff;
-    border-color: #111827;
-  }
-  .pill--active:hover {
-    background: #1f2937;
-    border-color: #1f2937;
-  }
+  .pill--active { background: #111827; color: #ffffff; border-color: #111827; }
+  .pill--active:hover { background: #1f2937; border-color: #1f2937; }
 
   /* ── Listing grid ── */
-  .listings-section {
-    padding: 0 0 4rem;
-  }
+  .listings-section { padding: 0 0 4rem; }
 
   .listing-grid {
     display: grid;
@@ -595,10 +474,7 @@ const cities = [...new Set(
     transition: box-shadow 0.15s, border-color 0.15s;
   }
 
-  .listing-card:hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    border-color: #d1d5db;
-  }
+  .listing-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); border-color: #d1d5db; }
 
   .lc-category {
     display: inline-block;
@@ -613,11 +489,7 @@ const cities = [...new Set(
     border: 1px solid #fed7aa;
   }
 
-  .lc-name {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #111827;
-  }
+  .lc-name { font-size: 1rem; font-weight: 600; color: #111827; }
 
   .lc-desc {
     font-size: 0.875rem;
@@ -630,11 +502,7 @@ const cities = [...new Set(
     flex: 1;
   }
 
-  .lc-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.3rem;
-  }
+  .lc-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 
   .lc-tag {
     font-size: 0.7rem;
@@ -646,53 +514,19 @@ const cities = [...new Set(
     border: 1px solid #e5e7eb;
   }
 
-  .lc-city {
-    font-size: 0.8rem;
-    color: #9ca3af;
-  }
+  .lc-city { font-size: 0.8rem; color: #9ca3af; }
 
-  .lc-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.375rem;
-    margin-top: 0.25rem;
-  }
+  .lc-badges { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-top: 0.25rem; }
 
-  .lc-badge {
-    font-size: 0.7rem;
-    font-weight: 500;
-    padding: 0.2rem 0.55rem;
-    border-radius: 999px;
-    border: 1px solid;
-  }
+  .lc-badge { font-size: 0.7rem; font-weight: 500; padding: 0.2rem 0.55rem; border-radius: 999px; border: 1px solid; }
 
-  .lc-badge--local {
-    color: #92400e;
-    background: #fffbeb;
-    border-color: #fcd34d;
-  }
+  .lc-badge--local { color: #92400e; background: #fffbeb; border-color: #fcd34d; }
+  .lc-badge--veteran { color: #1e3a5f; background: #eff6ff; border-color: #93c5fd; }
 
-  .lc-badge--veteran {
-    color: #1e3a5f;
-    background: #eff6ff;
-    border-color: #93c5fd;
-  }
-
-  .no-results {
-    text-align: center;
-    color: #6b7280;
-    font-size: 0.95rem;
-    padding: 3rem 0;
-  }
+  .no-results { text-align: center; color: #6b7280; font-size: 0.95rem; padding: 3rem 0; }
 
   /* ── Pagination ── */
-  .pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.375rem;
-    flex-wrap: wrap;
-  }
+  .pagination { display: flex; align-items: center; justify-content: center; gap: 0.375rem; flex-wrap: wrap; }
 
   .page-btn {
     padding: 0.45rem 0.85rem;
@@ -705,24 +539,10 @@ const cities = [...new Set(
     transition: all 0.15s;
   }
 
-  .page-btn:hover:not(:disabled) {
-    background: #f9fafb;
-    border-color: #d1d5db;
-  }
-
-  .page-btn--active {
-    background: #111827;
-    color: #ffffff;
-    border-color: #111827;
-  }
-  .page-btn--active:hover {
-    background: #1f2937;
-  }
-
-  .page-btn:disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
+  .page-btn:hover:not(:disabled) { background: #f9fafb; border-color: #d1d5db; }
+  .page-btn--active { background: #111827; color: #ffffff; border-color: #111827; }
+  .page-btn--active:hover { background: #1f2937; }
+  .page-btn:disabled { opacity: 0.4; cursor: default; }
 
   /* ── Slideout ── */
   .slideout-overlay {
@@ -735,10 +555,7 @@ const cities = [...new Set(
     transition: opacity 0.25s;
   }
 
-  .slideout-overlay--visible {
-    opacity: 1;
-    pointer-events: auto;
-  }
+  .slideout-overlay--visible { opacity: 1; pointer-events: auto; }
 
   .slideout {
     position: fixed;
@@ -755,9 +572,7 @@ const cities = [...new Set(
     box-shadow: -4px 0 24px rgba(0,0,0,0.12);
   }
 
-  .slideout--open {
-    transform: translateX(0);
-  }
+  .slideout--open { transform: translateX(0); }
 
   .slideout-close {
     position: absolute;
@@ -776,11 +591,10 @@ const cities = [...new Set(
     justify-content: center;
     transition: background 0.15s;
   }
+
   .slideout-close:hover { background: #e5e7eb; }
 
-  .slideout-body {
-    padding: 2.5rem 2rem 2rem;
-  }
+  .slideout-body { padding: 2.5rem 2rem 2rem; }
 
   .so-category {
     display: inline-block;
@@ -796,49 +610,18 @@ const cities = [...new Set(
     margin-bottom: 0.75rem;
   }
 
-  .so-name {
-    font-size: 1.35rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    margin-bottom: 0.25rem;
-  }
+  .so-name { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.25rem; }
 
-  .so-city {
-    font-size: 0.875rem;
-    color: #6b7280;
-    margin-bottom: 1rem;
-  }
+  .so-city { font-size: 0.875rem; color: #6b7280; margin-bottom: 1rem; }
 
-  .so-badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.375rem;
-    margin-bottom: 1.5rem;
-  }
+  .so-badges { display: flex; flex-wrap: wrap; gap: 0.375rem; margin-bottom: 1.5rem; }
 
-  .so-badge {
-    font-size: 0.75rem;
-    font-weight: 500;
-    padding: 0.25rem 0.65rem;
-    border-radius: 999px;
-    border: 1px solid;
-  }
+  .so-badge { font-size: 0.75rem; font-weight: 500; padding: 0.25rem 0.65rem; border-radius: 999px; border: 1px solid; }
 
-  .so-badge--local {
-    color: #92400e;
-    background: #fffbeb;
-    border-color: #fcd34d;
-  }
+  .so-badge--local { color: #92400e; background: #fffbeb; border-color: #fcd34d; }
+  .so-badge--veteran { color: #1e3a5f; background: #eff6ff; border-color: #93c5fd; }
 
-  .so-badge--veteran {
-    color: #1e3a5f;
-    background: #eff6ff;
-    border-color: #93c5fd;
-  }
-
-  .so-section {
-    margin-bottom: 1.25rem;
-  }
+  .so-section { margin-bottom: 1.25rem; }
 
   .so-section-label {
     display: block;
@@ -850,23 +633,12 @@ const cities = [...new Set(
     margin-bottom: 0.35rem;
   }
 
-  .so-section p {
-    font-size: 0.925rem;
-    color: #374151;
-    line-height: 1.6;
-  }
+  .so-section p { font-size: 0.925rem; color: #374151; line-height: 1.6; }
 
-  .so-section a {
-    color: #2563eb;
-    word-break: break-all;
-  }
+  .so-section a { color: #2563eb; word-break: break-all; }
   .so-section a:hover { text-decoration: underline; }
 
-  .so-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-  }
+  .so-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
 
   .so-tag {
     font-size: 0.75rem;
@@ -889,18 +661,9 @@ const cities = [...new Set(
     box-shadow: 0 -2px 12px rgba(0,0,0,0.05);
   }
 
-  .sticky-cta-inner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-  }
+  .sticky-cta-inner { display: flex; align-items: center; justify-content: center; gap: 1rem; }
 
-  .sticky-cta-text {
-    font-size: 0.9rem;
-    color: #6b7280;
-    font-weight: 500;
-  }
+  .sticky-cta-text { font-size: 0.9rem; color: #6b7280; font-weight: 500; }
 
   .btn-apply {
     display: inline-flex;
@@ -913,65 +676,8 @@ const cities = [...new Set(
     border-radius: 8px;
     transition: background 0.15s;
   }
+
   .btn-apply:hover { background: #1f2937; }
-
-  /* ── Footer ── */
-  .site-footer {
-    background: #f9fafb;
-    border-top: 1px solid #f3f4f6;
-    padding: 3rem 0;
-  }
-
-  .footer-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    text-align: center;
-  }
-
-  .footer-wordmark {
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-
-  .footer-tagline {
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-
-  .footer-links {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    margin-top: 0.25rem;
-  }
-
-  .footer-links a {
-    color: #374151;
-    transition: color 0.15s;
-  }
-  .footer-links a:hover { color: #111827; }
-
-  .footer-sep { color: #d1d5db; }
-
-  .footer-copy {
-    font-size: 0.775rem;
-    color: #9ca3af;
-    margin-top: 0.25rem;
-  }
-
-  .back-link {
-    display: inline-block;
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #6b7280;
-    margin-bottom: 1.25rem;
-    transition: color 0.15s;
-  }
-  .back-link:hover { color: #111827; }
 
   /* ── Responsive ── */
   @media (max-width: 900px) {
@@ -982,7 +688,6 @@ const cities = [...new Set(
     .hero { padding: 2.5rem 0 2rem; }
     .listing-grid { grid-template-columns: 1fr; }
     .slideout { width: 100%; }
-    .site-nav { gap: 1.25rem; }
     .sticky-cta-inner { flex-direction: column; gap: 0.5rem; }
   }
 </style>
