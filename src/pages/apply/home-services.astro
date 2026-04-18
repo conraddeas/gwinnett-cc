@@ -1,30 +1,8 @@
 ---
-// Home Services application form — Gwinnett.cc
+import MainLayout from '../../layouts/MainLayout.astro';
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>List Your Home Services Business — Gwinnett.cc</title>
-  <meta name="description" content="List your home services business in the Gwinnett County directory." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-</head>
-<body>
-
-  <!-- ====== HEADER ====== -->
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="/" class="wordmark">Gwinnett.cc</a>
-      <nav class="site-nav">
-        <a href="/home-services">Home Services</a>
-        <a href="/#contact">Contact</a>
-      </nav>
-    </div>
-  </header>
+<MainLayout title="Apply: Home Services — Gwinnett.cc" description="Submit your local contracting or home service business for the Gwinnett.cc directory.">
 
   <!-- ====== HERO ====== -->
   <section class="hero">
@@ -253,78 +231,9 @@
     </div>
   </section>
 
-  <!-- ====== FOOTER ====== -->
-  <footer class="site-footer">
-    <div class="container footer-inner">
-      <span class="footer-wordmark">Gwinnett.cc</span>
-      <p class="footer-tagline">Community. Connections. Curated.</p>
-      <div class="footer-links">
-        <a href="mailto:hello@gwinnett.cc">hello@gwinnett.cc</a>
-        <span class="footer-sep">&middot;</span>
-        <a href="/privacy">Privacy</a>
-      </div>
-      <p class="footer-copy">&copy; {new Date().getFullYear()} Gwinnett.cc. All rights reserved.</p>
-    </div>
-  </footer>
-
-</body>
-</html>
+</MainLayout>
 
 <style>
-  /* ── Reset & base ── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 16px;
-    color: #111827;
-    background: #ffffff;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  a { color: inherit; text-decoration: none; }
-  [hidden] { display: none !important; }
-  button { cursor: pointer; font-family: inherit; }
-
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-  }
-
-  /* ── Header ── */
-  .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: #ffffff;
-    border-bottom: 1px solid #f3f4f6;
-  }
-
-  .header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-  }
-
-  .wordmark {
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    color: #111827;
-  }
-
-  .site-nav { display: flex; gap: 2rem; }
-
-  .site-nav a {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #374151;
-    transition: color 0.15s;
-  }
-  .site-nav a:hover { color: #111827; }
-
   /* ── Hero ── */
   .hero {
     padding: 3.5rem 0 3rem;
@@ -716,57 +625,11 @@
   }
   .btn-back:hover { background: #1f2937; }
 
-  /* ── Footer ── */
-  .site-footer {
-    background: #f9fafb;
-    border-top: 1px solid #f3f4f6;
-    padding: 3rem 0;
-  }
-
-  .footer-inner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    text-align: center;
-  }
-
-  .footer-wordmark {
-    font-size: 1.1rem;
-    font-weight: 700;
-    letter-spacing: -0.03em;
-  }
-
-  .footer-tagline {
-    font-size: 0.875rem;
-    color: #6b7280;
-  }
-
-  .footer-links {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    margin-top: 0.25rem;
-  }
-
-  .footer-links a { color: #374151; transition: color 0.15s; }
-  .footer-links a:hover { color: #111827; }
-
-  .footer-sep { color: #d1d5db; }
-
-  .footer-copy {
-    font-size: 0.775rem;
-    color: #9ca3af;
-    margin-top: 0.25rem;
-  }
-
   /* ── Responsive ── */
   @media (max-width: 600px) {
     .hero { padding: 2.5rem 0 2rem; }
     .field-row { grid-template-columns: 1fr; }
     .tier-group { grid-template-columns: 1fr; }
-    .site-nav { gap: 1.25rem; }
   }
 </style>
 

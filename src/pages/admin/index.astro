@@ -1,4 +1,5 @@
 ---
+import MainLayout from '../../layouts/MainLayout.astro';
 // Admin review queue — Gwinnett.cc
 import { getDb } from '../../lib/db';
 
@@ -56,27 +57,7 @@ if (isAuthed) {
 }
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — Pending Listings</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-</head>
-<body>
-
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="/" class="wordmark">Gwinnett.cc</a>
-      <nav class="site-nav">
-        <a href="/#directories">Directories</a>
-        <a href="/#contact">Contact</a>
-      </nav>
-    </div>
-  </header>
+<MainLayout title="Admin Dashboard — Gwinnett.cc" description="Admin review queue.">
 
   <main class="main">
     <div class="container">
@@ -185,21 +166,7 @@ if (isAuthed) {
     </div>
   </main>
 
-  <footer class="site-footer" id="contact">
-    <div class="container footer-inner">
-      <span class="footer-wordmark">Gwinnett.cc</span>
-      <p class="footer-tagline">Community. Connections. Curated.</p>
-      <div class="footer-links">
-        <a href="mailto:hello@gwinnett.cc">hello@gwinnett.cc</a>
-        <span class="footer-sep">·</span>
-        <a href="/privacy">Privacy</a>
-      </div>
-      <p class="footer-copy">&copy; {new Date().getFullYear()} Gwinnett.cc. All rights reserved.</p>
-    </div>
-  </footer>
-
-</body>
-</html>
+</MainLayout>
 
 <script>
   document.querySelectorAll<HTMLButtonElement>('.btn-approve, .btn-reject').forEach(btn => {
@@ -255,34 +222,6 @@ if (isAuthed) {
 </script>
 
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  html {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 16px;
-    color: #111827;
-    background: #f9fafb;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  a { color: inherit; text-decoration: none; }
-  [hidden] { display: none !important; }
-
-  .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
-
-  /* Header */
-  .site-header {
-    position: sticky; top: 0; z-index: 100;
-    background: #ffffff; border-bottom: 1px solid #f3f4f6;
-  }
-  .header-inner {
-    display: flex; align-items: center; justify-content: space-between; height: 60px;
-  }
-  .wordmark { font-size: 1.125rem; font-weight: 700; letter-spacing: -0.02em; }
-  .site-nav { display: flex; gap: 1.5rem; }
-  .site-nav a { font-size: 0.9rem; font-weight: 500; color: #6b7280; transition: color 0.15s; }
-  .site-nav a:hover { color: #111827; }
-
   /* Main */
   .main { min-height: calc(100vh - 60px - 180px); padding: 3rem 0 5rem; }
 
@@ -365,14 +304,4 @@ if (isAuthed) {
   .btn-reject { background: transparent; color: #dc2626; border: 1.5px solid #dc2626; }
   .btn-reject:hover:not(:disabled) { background: #fef2f2; }
   .action-msg { font-size: 0.8rem; color: #dc2626; }
-
-  /* Footer */
-  .site-footer { background: #111827; color: #9ca3af; padding: 3rem 0; }
-  .footer-inner { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; text-align: center; }
-  .footer-wordmark { font-size: 1.1rem; font-weight: 700; color: #fff; }
-  .footer-tagline { font-size: 0.875rem; }
-  .footer-links { display: flex; align-items: center; gap: 0.75rem; font-size: 0.875rem; }
-  .footer-links a:hover { color: #fff; }
-  .footer-sep { color: #374151; }
-  .footer-copy { font-size: 0.8rem; color: #6b7280; }
 </style>
