@@ -25,14 +25,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
   const birthMonth = body.birth_month ? (parseInt(String(body.birth_month), 10) || null) : null;
   const birthDay   = body.birth_day   ? (parseInt(String(body.birth_day),   10) || null) : null;
   const source = typeof body.source === 'string' ? body.source.trim() || 'homepage' : 'homepage';
+  const profileToken = crypto.randomUUID();
 
   const env = (locals as any).runtime.env;
   const sql = getDb(env.DATABASE_URL);
 
   try {
     await sql`
-      INSERT INTO subscribers (email, first_name, city, birth_month, birth_day, source)
-      VALUES (${email}, ${firstName}, ${city}, ${birthMonth}, ${birthDay}, ${source})
+      INSERT INTO subscribers (email, first_name, city, birth_month, birth_day, source, profile_token)
+      VALUES (${email}, ${firstName}, ${city}, ${birthMonth}, ${birthDay}, ${source}, ${profileToken})
       ON CONFLICT (email) DO NOTHING
     `;
   } catch (err) {
