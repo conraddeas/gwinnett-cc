@@ -110,7 +110,6 @@ import MainLayout from '../layouts/MainLayout.astro';
     e.preventDefault();
     errorEl.hidden = true;
 
-    // Basic validation
     const name = form.querySelector<HTMLInputElement>('#name')?.value.trim();
     const business = form.querySelector<HTMLInputElement>('#business')?.value.trim();
     const email = form.querySelector<HTMLInputElement>('#email')?.value.trim();
@@ -137,7 +136,6 @@ import MainLayout from '../layouts/MainLayout.astro';
     };
 
     try {
-      // NOTE: Pointing to a new endpoint we need to create
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -172,6 +170,8 @@ import MainLayout from '../layouts/MainLayout.astro';
 </script>
 
 <style>
+  [hidden] { display: none !important; }
+
   /* ── Hero ── */
   .hero {
     padding: 4rem 0 3.5rem;
@@ -241,7 +241,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     line-height: 1.6;
   }
 
-  /* ── Contact Form ── */
+  /* ── Contact Section ── */
   .contact-section {
     background: #f9fafb;
   }
@@ -260,6 +260,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     margin-top: 0.75rem;
   }
 
+  /* ── Form ── */
   .advertise-form {
     display: flex;
     flex-direction: column;
@@ -271,24 +272,138 @@ import MainLayout from '../layouts/MainLayout.astro';
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   }
 
-  .advertise-form textarea {
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .form-field label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+  }
+
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
     padding: 0.75rem;
     border: 1px solid #d1d5db;
     border-radius: 8px;
     font-size: 0.9rem;
     font-family: inherit;
     color: #111827;
-    resize: vertical;
+    background: #ffffff;
     width: 100%;
     transition: border-color 0.15s, box-shadow 0.15s;
   }
 
-  .advertise-form textarea:focus {
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus {
     outline: none;
     border-color: #111827;
-    box-shadow: 0 0 0 3px rgba(17,24,39,0.06);
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
   }
 
+  .form-field textarea {
+    resize: vertical;
+  }
+
+  .required {
+    color: #ef4444;
+  }
+
+  .optional {
+    color: #9ca3af;
+    font-weight: 400;
+    font-size: 0.8rem;
+  }
+
+  .form-field--submit {
+    margin-top: 0.25rem;
+  }
+
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.75rem;
+    background: #111827;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, opacity 0.15s;
+    font-family: inherit;
+  }
+
+  .btn-submit:hover {
+    background: #1f2937;
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .form-msg {
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-top: 0.25rem;
+  }
+
+  .form-msg--error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+  }
+
+  /* ── Success State ── */
+  .form-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 2rem;
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    gap: 1rem;
+  }
+
+  .success-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    background: #f0fdf4;
+    color: #16a34a;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .form-success p {
+    color: #374151;
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 320px;
+  }
+
+  /* ── Responsive ── */
   @media (max-width: 900px) {
     .opps-grid {
       grid-template-columns: 1fr;
@@ -302,5 +417,6 @@ import MainLayout from '../layouts/MainLayout.astro';
   @media (max-width: 600px) {
     .hero { padding: 2.5rem 0 2rem; }
     .advertise-form { padding: 1.5rem; }
+    .form-row { grid-template-columns: 1fr; }
   }
 </style>
