@@ -1,0 +1,334 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { getDb } from '../lib/db';
+
+const token = Astro.url.searchParams.get('token');
+const updated = Astro.url.searchParams.get('updated') === 'true';
+const hasError = Astro.url.searchParams.get('error') === '1';
+
+let subscriber: any = null;
+
+if (token) {
+  try {
+    const env = (Astro.locals as any).runtime.env;
+    const sql = getDb(env.DATABASE_URL);
+    const rows = await sql`
+      SELECT * FROM subscribers WHERE profile_token = ${token} LIMIT 1
+    `;
+    subscriber = rows[0] ?? null;
+  } catch (err) {
+    console.error('[my-profile] DB lookup failed:', err);
+  }
+}
+---
+
+<MainLayout
+  title="Your Profile — Gwinnett.cc"
+  description="Manage your Gwinnett.cc subscriber profile."
+>
+
+  {!subscriber ? (
+    <section class="section">
+      <div class="container">
+        <div class="access-denied">
+          <p class="access-denied-msg">This link is invalid or has expired.</p>
+          <p class="access-denied-sub">
+            Check your email for a valid profile link, or contact us at{' '}
+            <a href="mailto:hello@gwinnett.cc">hello@gwinnett.cc</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  ) : (
+    <section class="section">
+      <div class="container profile-wrap">
+
+        <div class="profile-header">
+          <h1 class="profile-heading">Your Profile</h1>
+          <p class="profile-sub">Keep your info current so we can send you the right deals.</p>
+        </div>
+
+        <p class="form-msg form-msg--success" hidden={!updated}>Your profile has been updated.</p>
+        <p class="form-msg form-msg--error" hidden={!hasError}>Something went wrong. Please try again.</p>
+
+        <form method="POST" action="/api/update-profile" class="profile-form">
+          <div class="form-field">
+            <label for="email">Email</label>
+            <input type="text" id="email" value={subscriber.email} disabled readonly />
+          </div>
+
+          <div class="form-field">
+            <label for="first_name">First Name</label>
+            <input type="text" id="first_name" name="first_name" value={subscriber.first_name ?? ''} />
+          </div>
+
+          <div class="form-field">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" value={subscriber.city ?? ''} />
+          </div>
+
+          <div class="form-row">
+            <div class="form-field">
+              <label for="birth_month">Birth Month</label>
+              <input type="number" id="birth_month" name="birth_month" min="1" max="12" value={subscriber.birth_month ?? ''} />
+            </div>
+            <div class="form-field">
+              <label for="birth_day">Birth Day</label>
+              <input type="number" id="birth_day" name="birth_day" min="1" max="31" value={subscriber.birth_day ?? ''} />
+            </div>
+          </div>
+
+          <input type="hidden" name="token" value={subscriber.profile_token} />
+
+          <div class="form-field form-field--submit">
+            <button type="submit" class="btn-submit">Save Changes</button>
+          </div>
+        </form>
+
+        <div class="wallet-section">
+          <h2 class="wallet-heading">Your Birthday Wallet Card</h2>
+
+          {subscriber.wallet_card_url ? (
+            <div class="wallet-state">
+              <p class="wallet-text">Your wallet card is ready.</p>
+              <a href={subscriber.wallet_card_url} target="_blank" class="btn-wallet">View / Install Card</a>
+              {subscriber.wallet_card_installed_at && (
+                <p class="wallet-installed">Installed ✓</p>
+              )}
+            </div>
+          ) : (
+            <div class="wallet-state">
+              <p class="wallet-text">Save your Gwinnett Birthday Card to Apple Wallet or Google Wallet.</p>
+              <p class="wallet-sub">Get notified about birthday deals near you — right from your phone.</p>
+              {/* /api/create-wallet-card is built in the next task — this form is a stub target */}
+              <form method="POST" action="/api/create-wallet-card">
+                <input type="hidden" name="token" value={subscriber.profile_token} />
+                <button type="submit" class="btn-wallet">Get Your Birthday Wallet Card</button>
+              </form>
+            </div>
+          )}
+        </div>
+
+      </div>
+    </section>
+  )}
+
+</MainLayout>
+
+<style>
+  [hidden] { display: none !important; }
+
+  /* ── Access Denied ── */
+  .access-denied {
+    max-width: 480px;
+    margin: 6rem auto;
+    text-align: center;
+  }
+
+  .access-denied-msg {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.75rem;
+  }
+
+  .access-denied-sub {
+    font-size: 0.95rem;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  .access-denied-sub a {
+    color: #111827;
+    border-bottom: 1px solid #d1d5db;
+  }
+
+  /* ── Profile layout ── */
+  .profile-wrap {
+    max-width: 560px;
+    padding-top: 3.5rem;
+    padding-bottom: 4rem;
+  }
+
+  .profile-header {
+    margin-bottom: 2rem;
+  }
+
+  .profile-heading {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 0.5rem;
+  }
+
+  .profile-sub {
+    font-size: 1rem;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  /* ── Messages ── */
+  .form-msg {
+    font-size: 0.875rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+  }
+
+  .form-msg--success {
+    background: #f0fdf4;
+    color: #15803d;
+    border: 1px solid #bbf7d0;
+  }
+
+  .form-msg--error {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+  }
+
+  /* ── Form ── */
+  .profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    margin-bottom: 2.5rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .form-field label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+  }
+
+  .form-field input {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: #111827;
+    background: #ffffff;
+    width: 100%;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .form-field input:focus {
+    outline: none;
+    border-color: #111827;
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
+  }
+
+  .form-field input:disabled {
+    background: #f9fafb;
+    color: #9ca3af;
+    cursor: not-allowed;
+  }
+
+  .form-field--submit {
+    margin-top: 0.25rem;
+  }
+
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.75rem;
+    background: #111827;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    font-family: inherit;
+  }
+
+  .btn-submit:hover {
+    background: #1f2937;
+  }
+
+  /* ── Wallet Section ── */
+  .wallet-section {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 2rem;
+  }
+
+  .wallet-heading {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  .wallet-state {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .wallet-text {
+    font-size: 0.95rem;
+    color: #374151;
+  }
+
+  .wallet-sub {
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.6;
+  }
+
+  .wallet-installed {
+    font-size: 0.8rem;
+    color: #16a34a;
+  }
+
+  .btn-wallet {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1.5rem;
+    background: #111827;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+    font-family: inherit;
+    align-self: flex-start;
+  }
+
+  .btn-wallet:hover {
+    background: #1f2937;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 600px) {
+    .profile-wrap { padding-top: 2.5rem; }
+    .profile-form { padding: 1.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
