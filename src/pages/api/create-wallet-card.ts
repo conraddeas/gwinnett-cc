@@ -61,6 +61,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const cardData = await cardRes.json();
+    console.log('[create-wallet-card] cardData:', JSON.stringify(cardData));
     const installUrl = cardData.data?.installLink;
     const boomerangCardId = cardData.data?.id ?? null;
 
