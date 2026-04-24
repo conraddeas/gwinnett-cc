@@ -100,11 +100,10 @@ if (token) {
             <div class="wallet-state">
               <p class="wallet-text">Save your Gwinnett Birthday Card to Apple Wallet or Google Wallet.</p>
               <p class="wallet-sub">Get notified about birthday deals near you — right from your phone.</p>
-              {/* /api/create-wallet-card is built in the next task — this form is a stub target */}
-              <form method="POST" action="/api/create-wallet-card">
-                <input type="hidden" name="token" value={subscriber.profile_token} />
-                <button type="submit" class="btn-wallet">Get Your Birthday Wallet Card</button>
-              </form>
+              <button id="wallet-btn" class="btn-wallet" data-token={subscriber.profile_token}>
+                Add to Apple / Google Wallet
+              </button>
+              <p id="wallet-error" class="wallet-error" hidden></p>
             </div>
           )}
         </div>
@@ -325,6 +324,12 @@ if (token) {
     background: #1f2937;
   }
 
+  .wallet-error {
+    font-size: 0.875rem;
+    color: #b91c1c;
+    margin-top: 0.25rem;
+  }
+
   /* ── Responsive ── */
   @media (max-width: 600px) {
     .profile-wrap { padding-top: 2.5rem; }
@@ -332,3 +337,41 @@ if (token) {
     .form-row { grid-template-columns: 1fr; }
   }
 </style>
+
+<script>
+  const btn = document.getElementById('wallet-btn') as HTMLButtonElement | null;
+  const errorEl = document.getElementById('wallet-error') as HTMLParagraphElement | null;
+
+  if (btn) {
+    btn.addEventListener('click', async () => {
+      const token = btn.dataset.token;
+      btn.disabled = true;
+      btn.textContent = 'Setting up your card…';
+      if (errorEl) errorEl.hidden = true;
+
+      try {
+        const res = await fetch('/api/create-wallet-card', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok || !data.installUrl) {
+          throw new Error(data.error ?? 'Something went wrong.');
+        }
+
+        window.location.href = data.installUrl;
+
+      } catch (err: any) {
+        if (errorEl) {
+          errorEl.textContent = err.message ?? 'Could not create your wallet card. Please try again.';
+          errorEl.hidden = false;
+        }
+        btn.disabled = false;
+        btn.textContent = 'Add to Apple / Google Wallet';
+      }
+    });
+  }
+</script>
