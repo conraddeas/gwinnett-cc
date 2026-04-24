@@ -62,8 +62,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     const cardData = await cardRes.json();
     console.log('[create-wallet-card] cardData:', JSON.stringify(cardData));
-    const installUrl = cardData.data?.installLink;
-    const boomerangCardId = cardData.data?.id ?? null;
+    const boomerangCardId = cardData.data?.id ?? cardData.id ?? null;
+    const installUrl = boomerangCardId
+      ? `https://app.walletpasssoftware.com/installcard/${boomerangCardId}/universal`
+      : null;
 
     if (!installUrl) {
       console.error('[create-wallet-card] No install URL in response:', cardData);
