@@ -70,7 +70,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const customerData = await customerRes.json();
-    const customerId = customerData.id;
+    const customerId = customerData.data?.id;
 
     if (!customerId) {
       console.error('[create-wallet-card] No customer ID in response:', customerData);
@@ -94,8 +94,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
 
     const cardData = await cardRes.json();
-    const installUrl = cardData.installLink;
-    const boomerangCardId = cardData.id ?? null;
+    const installUrl = cardData.data?.installLink;
+    const boomerangCardId = cardData.data?.id ?? null;
 
     if (!installUrl) {
       console.error('[create-wallet-card] No install URL in response:', cardData);
