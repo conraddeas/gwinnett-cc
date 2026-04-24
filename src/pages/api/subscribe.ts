@@ -44,6 +44,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     });
   }
 
+  // Encharge
   try {
     const tags = [
       'gwinnett-newsletter',
@@ -71,6 +72,51 @@ export const POST: APIRoute = async ({ request, locals }) => {
     }
   } catch (err) {
     console.error('[subscribe] Encharge fetch failed:', err);
+  }
+
+  // Boomerang — create customer so wallet card can be issued without opt-in page
+  try {
+    const fullName = (firstName ?? '').trim();
+    const spaceIndex = fullName.indexOf(' ');
+    const boomerangFirstName = spaceIndex > -1 ? fullName.slice(0, spaceIndex) : fullName;
+    const surname = spaceIndex > -1 ? fullName.slice(spaceIndex + 1) : '';
+
+    const birthMonthStr = String(birthMonth ?? 1).padStart(2, '0');
+    const birthDayStr = String(birthDay ?? 1).padStart(2, '0');
+    const dateOfBirth = `2000-${birthMonthStr}-${birthDayStr}`;
+
+    const customerRes = await fetch('https://api.digitalwallet.cards/api/v2/customers', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-API-Key': env.BOOMERANG_API_KEY,
+      },
+      body: JSON.stringify({
+        firstName: boomerangFirstName,
+        surname,
+        email,
+        dateOfBirth,
+      }),
+    });
+
+    if (customerRes.ok) {
+      const customerData = await customerRes.json();
+      const boomerangCustomerId = customerData.data?.id ?? null;
+      if (boomerangCustomerId) {
+        await sql`
+          UPDATE subscribers
+          SET boomerang_customer_id = ${boomerangCustomerId}
+          WHERE email = ${email}
+        `;
+      } else {
+        console.error('[subscribe] Boomerang customer ID missing in response:', customerData);
+      }
+    } else {
+      console.error('[subscribe] Boomerang customer create failed:', await customerRes.text());
+    }
+  } catch (err) {
+    console.error('[subscribe] Boomerang fetch failed:', err);
   }
 
   return new Response(JSON.stringify({ success: true }), {

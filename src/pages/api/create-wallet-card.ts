@@ -14,7 +14,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const sql = getDb(env.DATABASE_URL);
 
     const rows = await sql`
-      SELECT id, first_name, email, birth_month, birth_day, boomerang_card_id, wallet_card_url
+      SELECT id, email, boomerang_customer_id, wallet_card_url
       FROM subscribers
       WHERE profile_token = ${token}
       LIMIT 1
@@ -25,9 +25,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(JSON.stringify({ error: 'Subscriber not found' }), { status: 404 });
     }
 
-    // Already issued — skip re-issue, return existing URL
+    // Already issued — return existing URL
     if (subscriber.wallet_card_url) {
       return new Response(JSON.stringify({ installUrl: subscriber.wallet_card_url }), { status: 200 });
+    }
+
+    if (!subscriber.boomerang_customer_id) {
+      return new Response(JSON.stringify({ error: 'No Boomerang customer on file. Please contact support.' }), { status: 400 });
     }
 
     const BOOMERANG_API = 'https://api.digitalwallet.cards/api/v2';
@@ -40,50 +44,13 @@ export const POST: APIRoute = async ({ request, locals }) => {
       'X-API-Key': apiKey,
     };
 
-    // Split stored first_name into firstName + surname for Boomerang
-    const fullName = (subscriber.first_name ?? '').trim();
-    const spaceIndex = fullName.indexOf(' ');
-    const firstName = spaceIndex > -1 ? fullName.slice(0, spaceIndex) : fullName;
-    const surname = spaceIndex > -1 ? fullName.slice(spaceIndex + 1) : '';
-
-    // Birthday: Boomerang expects YYYY-MM-DD
-    const birthMonth = String(subscriber.birth_month ?? 1).padStart(2, '0');
-    const birthDay = String(subscriber.birth_day ?? 1).padStart(2, '0');
-    const dateOfBirth = `2000-${birthMonth}-${birthDay}`;
-
-    // Step A: Create customer in Boomerang
-    const customerRes = await fetch(`${BOOMERANG_API}/customers`, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify({
-        firstName,
-        surname,
-        email: subscriber.email,
-        dateOfBirth,
-      }),
-    });
-
-    if (!customerRes.ok) {
-      const errText = await customerRes.text();
-      console.error('[create-wallet-card] Customer create failed:', errText);
-      return new Response(JSON.stringify({ error: 'Failed to create Boomerang customer' }), { status: 500 });
-    }
-
-    const customerData = await customerRes.json();
-    const customerId = customerData.data?.id;
-
-    if (!customerId) {
-      console.error('[create-wallet-card] No customer ID in response:', customerData);
-      return new Response(JSON.stringify({ error: 'No customer ID returned' }), { status: 500 });
-    }
-
-    // Step B: Issue card to customer
+    // Issue card using existing Boomerang customer
     const cardRes = await fetch(`${BOOMERANG_API}/cards`, {
       method: 'POST',
       headers,
       body: JSON.stringify({
         templateId,
-        customerId,
+        customerId: subscriber.boomerang_customer_id,
       }),
     });
 
@@ -102,7 +69,6 @@ export const POST: APIRoute = async ({ request, locals }) => {
       return new Response(JSON.stringify({ error: 'No install URL returned' }), { status: 500 });
     }
 
-    // Step C: Persist to Neon
     await sql`
       UPDATE subscribers
       SET wallet_card_url = ${installUrl},
