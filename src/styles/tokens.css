@@ -1,0 +1,49 @@
+/*
+ * Gwinnett Community Connections — Design Tokens
+ */
+
+/* ── Light mode (default) ── */
+:root {
+  --gcc-bg:          oklch(0.98 0.025 78);
+  --gcc-bg-muted:    oklch(0.95 0.022 78);
+  --gcc-bg-deep:     oklch(0.91 0.022 78);
+  --gcc-fg:          oklch(0.15 0.020 58);
+  --gcc-fg-muted:    oklch(0.44 0.016 60);
+  --gcc-fg-light:    oklch(0.63 0.012 60);
+  --gcc-border:      oklch(0.88 0.018 75);
+  --gcc-border-mid:  oklch(0.82 0.018 75);
+  --gcc-amber:       oklch(0.60 0.15 54);
+  --gcc-amber-light: oklch(0.94 0.045 68);
+  --gcc-welcome:       oklch(0.44 0.12 148);
+  --gcc-welcome-light: oklch(0.95 0.035 148);
+  --gcc-home:          oklch(0.40 0.11 235);
+  --gcc-home-light:    oklch(0.94 0.030 235);
+  --gcc-eat:           oklch(0.52 0.16 42);
+  --gcc-eat-light:     oklch(0.95 0.045 48);
+  --gcc-birthday:      oklch(0.48 0.16 14);
+  --gcc-birthday-light:oklch(0.95 0.040 14);
+  --gcc-font-display: 'Lora', Georgia, serif;
+  --gcc-font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+  --gcc-space-xs:  4px;
+  --gcc-space-sm:  8px;
+  --gcc-space-md:  16px;
+  --gcc-space-lg:  24px;
+  --gcc-space-xl:  40px;
+  --gcc-space-2xl: 64px;
+  --gcc-radius-sm:  8px;
+  --gcc-radius-md:  14px;
+  --gcc-radius-lg:  20px;
+  --gcc-radius-xl:  24px;
+  --gcc-radius-pill: 999px;
+  --gcc-shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --gcc-shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+  --gcc-shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
