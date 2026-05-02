@@ -1,0 +1,274 @@
+---
+// NewsletterModal — slide-up newsletter signup for directory pages
+---
+
+<div id="gcc-modal-backdrop" class="nm-backdrop" aria-hidden="true" hidden></div>
+<div
+  id="gcc-modal"
+  class="nm-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="gcc-modal-heading"
+  hidden
+>
+  <button id="gcc-modal-close" class="nm-close" aria-label="Close newsletter signup">&times;</button>
+
+  <div id="gcc-modal-form-wrap">
+    <h3 id="gcc-modal-heading" class="nm-heading">Stay in the Loop, Gwinnett</h3>
+    <p class="nm-sub">Get the best local deals, new listings, and community picks — free, weekly.</p>
+    <form id="gcc-modal-form" class="nm-form" novalidate>
+      <div class="nm-field">
+        <input
+          type="text"
+          id="gcc-modal-firstname"
+          name="firstName"
+          placeholder="First name (optional)"
+          autocomplete="given-name"
+        />
+      </div>
+      <div class="nm-field">
+        <input
+          type="email"
+          id="gcc-modal-email"
+          name="email"
+          placeholder="Your email address"
+          required
+          autocomplete="email"
+        />
+      </div>
+      <button type="submit" class="nm-submit">Subscribe Free</button>
+      <p id="gcc-modal-error" class="nm-error" hidden></p>
+    </form>
+  </div>
+
+  <div id="gcc-modal-success" class="nm-success" hidden>
+    <p>You're in! Welcome to the Gwinnett community.</p>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const STORAGE_KEY = 'gcc-modal-dismissed';
+    if (localStorage.getItem(STORAGE_KEY)) return;
+
+    const backdrop  = document.getElementById('gcc-modal-backdrop')!;
+    const modal     = document.getElementById('gcc-modal')!;
+    const closeBtn  = document.getElementById('gcc-modal-close')!;
+    const form      = document.getElementById('gcc-modal-form') as HTMLFormElement;
+    const errorEl   = document.getElementById('gcc-modal-error')!;
+    const formWrap  = document.getElementById('gcc-modal-form-wrap')!;
+    const successEl = document.getElementById('gcc-modal-success')!;
+
+    function showModal() {
+      backdrop.removeAttribute('hidden');
+      modal.removeAttribute('hidden');
+      // Force reflow so the CSS translate transition plays from the initial off-screen state
+      modal.getBoundingClientRect();
+      modal.classList.add('nm-modal--visible');
+      backdrop.classList.add('nm-backdrop--visible');
+    }
+
+    function hideModal() {
+      localStorage.setItem(STORAGE_KEY, '1');
+      modal.classList.remove('nm-modal--visible');
+      backdrop.classList.remove('nm-backdrop--visible');
+      setTimeout(() => {
+        modal.setAttribute('hidden', '');
+        backdrop.setAttribute('hidden', '');
+      }, 310);
+    }
+
+    // Trigger: 5s timer OR 25% scroll depth, whichever fires first
+    let triggered = false;
+
+    function trigger() {
+      if (triggered) return;
+      triggered = true;
+      clearTimeout(timerId);
+      window.removeEventListener('scroll', onScroll);
+      showModal();
+    }
+
+    const timerId = setTimeout(trigger, 5000);
+
+    function onScroll() {
+      if (window.scrollY >= document.documentElement.scrollHeight * 0.25) trigger();
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Dismiss handlers
+    closeBtn.addEventListener('click', hideModal);
+    backdrop.addEventListener('click', hideModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal.hasAttribute('hidden')) hideModal();
+    });
+
+    // Form submit
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.setAttribute('hidden', '');
+
+      const email     = (document.getElementById('gcc-modal-email') as HTMLInputElement).value.trim();
+      const firstName = (document.getElementById('gcc-modal-firstname') as HTMLInputElement).value.trim();
+
+      if (!email) {
+        errorEl.textContent = 'Please enter your email address.';
+        errorEl.removeAttribute('hidden');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, firstName, source: 'modal' }),
+        });
+
+        if (res.ok) {
+          localStorage.setItem(STORAGE_KEY, '1');
+          formWrap.setAttribute('hidden', '');
+          successEl.removeAttribute('hidden');
+          setTimeout(hideModal, 300);
+        } else {
+          const data = await res.json().catch(() => ({}));
+          errorEl.textContent = (data as any).error || 'Something went wrong. Please try again.';
+          errorEl.removeAttribute('hidden');
+        }
+      } catch {
+        errorEl.textContent = 'Network error. Please try again.';
+        errorEl.removeAttribute('hidden');
+      }
+    });
+  })();
+</script>
+
+<style>
+  .nm-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+
+  .nm-backdrop--visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nm-modal {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    width: calc(100% - 2rem);
+    max-width: 420px;
+    z-index: 1000;
+    background: var(--gcc-bg);
+    border-radius: var(--gcc-radius-lg) var(--gcc-radius-lg) 0 0;
+    box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.18);
+    padding: 2rem 1.75rem 2.25rem;
+    transform: translateX(-50%) translateY(100%);
+    transition: transform 0.3s ease-out;
+  }
+
+  .nm-modal--visible {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .nm-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: var(--gcc-bg-muted);
+    border-radius: 50%;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: var(--gcc-fg-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .nm-close:hover {
+    background: var(--gcc-bg-deep);
+  }
+
+  .nm-heading {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--gcc-fg);
+    margin: 0 0 0.5rem;
+  }
+
+  .nm-sub {
+    font-size: 0.9rem;
+    color: var(--gcc-fg-muted);
+    line-height: 1.55;
+    margin: 0 0 1.25rem;
+  }
+
+  .nm-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .nm-field input {
+    width: 100%;
+    padding: 0.65rem 0.875rem;
+    border: 1px solid var(--gcc-border);
+    border-radius: var(--gcc-radius-sm);
+    font-size: 0.9rem;
+    font-family: inherit;
+    color: var(--gcc-fg);
+    background: #ffffff;
+    box-sizing: border-box;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .nm-field input:focus {
+    outline: none;
+    border-color: var(--gcc-fg);
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.06);
+  }
+
+  .nm-submit {
+    padding: 0.7rem 1.5rem;
+    background: var(--gcc-amber);
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    font-family: inherit;
+    border: none;
+    border-radius: var(--gcc-radius-sm);
+    cursor: pointer;
+    transition: opacity 0.15s;
+    margin-top: 0.25rem;
+  }
+
+  .nm-submit:hover {
+    opacity: 0.88;
+  }
+
+  .nm-error {
+    font-size: 0.825rem;
+    color: #dc2626;
+    margin: 0;
+  }
+
+  .nm-success {
+    text-align: center;
+    padding: 1rem 0 0.5rem;
+    color: var(--gcc-fg);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+</style>
