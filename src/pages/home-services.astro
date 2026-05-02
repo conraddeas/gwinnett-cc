@@ -1,6 +1,7 @@
 ---
 // Home Services directory — Gwinnett.cc
 import MainLayout from '../layouts/MainLayout.astro';
+import NewsletterModal from '../components/NewsletterModal.astro';
 import { getDb } from '../lib/db';
 
 const env = (Astro.locals as any).runtime.env;
@@ -116,6 +117,7 @@ const cities = [...new Set(
     </div>
   </div>
 
+  <NewsletterModal />
 </MainLayout>
 
 <!-- ====== DATA ====== -->
