@@ -62,6 +62,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           user: {
             email,
             ...(firstName ? { firstName } : {}),
+            profileToken,
             tags,
           },
         }),
