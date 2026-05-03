@@ -3,7 +3,9 @@
 ---
 <header class="site-header">
   <div class="container header-inner">
-    <a href="/" class="wordmark">Gwinnett.cc</a>
+    <a href="/" class="site-logo-link">
+      <img src="/logo.png" alt="Gwinnett.cc" class="site-logo" />
+    </a>
     
     <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle menu">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -22,6 +24,12 @@
     </nav>
   </div>
 </header>
+
+<style>
+  .site-logo-link { display: flex; align-items: center; }
+  .site-logo { height: 36px; width: auto; display: block; }
+  :global(html.dark) .site-logo { filter: brightness(0) invert(1); }
+</style>
 
 <script>
   const toggle = document.getElementById('mobile-menu-toggle');
