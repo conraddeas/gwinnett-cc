@@ -219,7 +219,7 @@ import MainLayout from '../layouts/MainLayout.astro';
   /* ── Hero ── */
   .hero {
     padding: 5rem 0 4rem;
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--gcc-border);
   }
 
   .hero-headline {
@@ -232,14 +232,14 @@ import MainLayout from '../layouts/MainLayout.astro';
 
   .hero-sub {
     font-size: 1.125rem;
-    color: #6b7280;
+    color: var(--gcc-fg-muted);
     max-width: 480px;
     line-height: 1.6;
   }
 
   /* ── Directory cards ── */
   .directories {
-    border-bottom: 1px solid #f3f4f6;
+    border-bottom: 1px solid var(--gcc-border);
   }
 
   .card-grid {
@@ -254,17 +254,17 @@ import MainLayout from '../layouts/MainLayout.astro';
     flex-direction: column;
     gap: 0.75rem;
     padding: 1.5rem;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--gcc-border);
     border-radius: 12px;
-    background: #ffffff;
+    background: var(--gcc-bg);
     transition: box-shadow 0.15s, border-color 0.15s;
   }
 
   .dir-card--active { cursor: pointer; }
 
   .dir-card--active:hover {
-    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-    border-color: #d1d5db;
+    box-shadow: var(--gcc-shadow-md);
+    border-color: var(--gcc-border-mid);
   }
 
   .dir-card--soon {
@@ -280,20 +280,20 @@ import MainLayout from '../layouts/MainLayout.astro';
     letter-spacing: 0.05em;
     text-transform: uppercase;
     padding: 0.2rem 0.6rem;
-    border-radius: 999px;
+    border-radius: var(--gcc-radius-pill);
     width: fit-content;
   }
 
   .card-badge--new {
-    background: #ecfdf5;
-    color: #059669;
+    background: var(--gcc-welcome-light);
+    color: var(--gcc-welcome);
     border: 1px solid #a7f3d0;
   }
 
   .card-badge--soon {
-    background: #f3f4f6;
-    color: #9ca3af;
-    border: 1px solid #e5e7eb;
+    background: var(--gcc-bg-muted);
+    color: var(--gcc-fg-light);
+    border: 1px solid var(--gcc-border);
   }
 
   .card-icon { font-size: 2rem; line-height: 1; }
@@ -301,21 +301,21 @@ import MainLayout from '../layouts/MainLayout.astro';
   .card-title {
     font-size: 1rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--gcc-fg);
   }
 
   .card-desc {
     font-size: 0.875rem;
-    color: #6b7280;
+    color: var(--gcc-fg-muted);
     line-height: 1.55;
     flex: 1;
   }
 
   /* ── Newsletter ── */
   .newsletter {
-    background: #f9fafb;
-    border-top: 1px solid #f3f4f6;
-    border-bottom: 1px solid #f3f4f6;
+    background: var(--gcc-bg-muted);
+    border-top: 1px solid var(--gcc-border);
+    border-bottom: 1px solid var(--gcc-border);
   }
 
   .newsletter-inner {
@@ -326,7 +326,7 @@ import MainLayout from '../layouts/MainLayout.astro';
   }
 
   .newsletter-sub {
-    color: #6b7280;
+    color: var(--gcc-fg-muted);
     font-size: 1rem;
     line-height: 1.6;
     margin-top: 0.75rem;
@@ -355,21 +355,21 @@ import MainLayout from '../layouts/MainLayout.astro';
   .form-field label {
     font-size: 0.8rem;
     font-weight: 500;
-    color: #374151;
+    color: var(--gcc-fg-muted);
   }
 
-  .optional, .required { font-weight: 400; color: #9ca3af; }
+  .optional, .required { font-weight: 400; color: var(--gcc-fg-light); }
   .required { color: #ef4444; }
 
   .form-field input,
   .form-field select {
     padding: 0.6rem 0.875rem;
-    border: 1px solid #d1d5db;
-    border-radius: 8px;
+    border: 1px solid var(--gcc-border-mid);
+    border-radius: var(--gcc-radius-sm);
     font-size: 0.9rem;
     font-family: inherit;
-    color: #111827;
-    background: #ffffff;
+    color: var(--gcc-fg);
+    background: var(--gcc-bg);
     transition: border-color 0.15s, box-shadow 0.15s;
     -webkit-appearance: none;
     appearance: none;
@@ -385,20 +385,20 @@ import MainLayout from '../layouts/MainLayout.astro';
   .form-field input:focus,
   .form-field select:focus {
     outline: none;
-    border-color: #111827;
+    border-color: var(--gcc-fg);
     box-shadow: 0 0 0 3px rgba(17,24,39,0.06);
   }
 
   .btn-submit {
     width: 100%;
     padding: 0.65rem 1.25rem;
-    background: #111827;
+    background: var(--gcc-fg);
     color: #ffffff;
     font-size: 0.9rem;
     font-weight: 600;
     font-family: inherit;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--gcc-radius-sm);
     cursor: pointer;
     transition: background 0.15s;
     white-space: nowrap;
@@ -410,7 +410,7 @@ import MainLayout from '../layouts/MainLayout.astro';
   .form-msg {
     font-size: 0.875rem;
     padding: 0.6rem 0.875rem;
-    border-radius: 8px;
+    border-radius: var(--gcc-radius-sm);
     margin-top: -0.25rem;
   }
 
@@ -425,17 +425,17 @@ import MainLayout from '../layouts/MainLayout.astro';
     align-items: center;
     gap: 0.75rem;
     padding: 1.25rem;
-    background: #ecfdf5;
+    background: var(--gcc-welcome-light);
     border: 1px solid #a7f3d0;
     border-radius: 10px;
-    color: #065f46;
+    color: var(--gcc-welcome);
     font-weight: 500;
   }
 
-  .success-icon { font-size: 1.25rem; color: #059669; }
+  .success-icon { font-size: 1.25rem; color: var(--gcc-welcome); }
 
   /* ── Resources ── */
-  .resources { border-bottom: 1px solid #f3f4f6; }
+  .resources { border-bottom: 1px solid var(--gcc-border); }
 
   .resource-groups {
     display: grid;
@@ -448,7 +448,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #9ca3af;
+    color: var(--gcc-fg-light);
     margin-bottom: 1rem;
   }
 
@@ -461,18 +461,18 @@ import MainLayout from '../layouts/MainLayout.astro';
 
   .resource-list a {
     font-size: 0.9rem;
-    color: #374151;
+    color: var(--gcc-fg-muted);
     border-bottom: 1px solid transparent;
     transition: color 0.15s, border-color 0.15s;
   }
 
   .resource-list a:hover {
-    color: #111827;
-    border-bottom-color: #111827;
+    color: var(--gcc-fg);
+    border-bottom-color: var(--gcc-fg);
   }
 
   /* ── Network ── */
-  .network { border-bottom: 1px solid #f3f4f6; }
+  .network { border-bottom: 1px solid var(--gcc-border); }
 
   .member-grid {
     display: grid;
@@ -489,9 +489,9 @@ import MainLayout from '../layouts/MainLayout.astro';
     text-align: center;
     gap: 0.75rem;
     padding: 1.75rem 1.25rem;
-    border: 1px solid #e5e7eb;
+    border: 1px solid var(--gcc-border);
     border-radius: 12px;
-    background: #ffffff;
+    background: var(--gcc-bg);
   }
 
   .member-card--locked { opacity: 0.45; user-select: none; }
@@ -511,7 +511,7 @@ import MainLayout from '../layouts/MainLayout.astro';
     width: 52px;
     height: 52px;
     border-radius: 50%;
-    background: #111827;
+    background: var(--gcc-fg);
     color: #ffffff;
     font-size: 0.85rem;
     font-weight: 700;
@@ -521,15 +521,15 @@ import MainLayout from '../layouts/MainLayout.astro';
     letter-spacing: 0.02em;
   }
 
-  .member-avatar--ghost { background: #e5e7eb; }
+  .member-avatar--ghost { background: var(--gcc-border); }
   .member-name { font-size: 0.95rem; font-weight: 600; }
 
   .member-role,
-  .member-location { font-size: 0.8rem; color: #6b7280; line-height: 1.4; }
+  .member-location { font-size: 0.8rem; color: var(--gcc-fg-muted); line-height: 1.4; }
 
   .ghost-line {
     height: 10px;
-    background: #e5e7eb;
+    background: var(--gcc-border);
     border-radius: 999px;
     margin: 0 auto;
   }
@@ -543,11 +543,11 @@ import MainLayout from '../layouts/MainLayout.astro';
     display: inline-flex;
     align-items: center;
     padding: 0.75rem 1.75rem;
-    background: #111827;
+    background: var(--gcc-fg);
     color: #ffffff;
     font-size: 0.9rem;
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: var(--gcc-radius-sm);
     transition: background 0.15s;
   }
 
