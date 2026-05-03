@@ -46,10 +46,15 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
   // Encharge
   try {
+    const citySlug = city ? city.toLowerCase().replace(/\s+/g, '-') : null;
+
     const tags = [
+      'gwinnett-subscriber',
       'gwinnett-newsletter',
       ...(source ? [`source-${source}`] : []),
-      ...(birthMonth ? [`birth-month-${birthMonth}`] : []),
+      ...(birthMonth ? [`birthday-month-${birthMonth}`] : []),
+      ...(birthDay ? [`birthday-day-${birthDay}`] : []),
+      ...(citySlug ? [`city-${citySlug}`] : []),
     ].join(', ');
 
     const enchargeRes = await fetch(
