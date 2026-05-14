@@ -44,18 +44,18 @@ const cities = [...new Set(
 ---
 
 <MainLayout
-  title={`${cityName} Restaurants — Gwinnett.cc`}
-  description="Local dining across Gwinnett County."
+  title={`Locally-Owned Restaurants in ${cityName}, GA — Eat Local Gwinnett`}
+  description={`Find locally-owned and independently operated restaurants in ${cityName}, Gwinnett County, Georgia. Curated dining from Eat Local Gwinnett.`}
 >
 
   <!-- ====== HERO ====== -->
   <section class="hero">
     <div class="container">
       <a href="/restaurants" class="back-link">← All Restaurants</a>
-      <p class="hero-eyebrow">Directory</p>
-      <h1 class="hero-headline">Restaurants</h1>
+      <p class="hero-eyebrow">Eat Local Gwinnett · {cityName}</p>
+      <h1 class="hero-headline">Locally-Owned Restaurants in {cityName}</h1>
       <p class="hero-sub">
-        Local dining across Gwinnett — from Downtown Lawrenceville to Duluth, Suwanee, and beyond.
+        Discover locally-owned and independently operated restaurants in {cityName}, Georgia — curated for Gwinnett County residents.
       </p>
     </div>
   </section>
@@ -124,7 +124,7 @@ const cities = [...new Set(
   <!-- ====== STICKY APPLY CTA ====== -->
   <div class="sticky-cta">
     <div class="container sticky-cta-inner">
-      <span class="sticky-cta-text">Own a local restaurant?</span>
+      <span class="sticky-cta-text">Own a Gwinnett restaurant?</span>
       <a href="/apply/restaurants" class="btn-apply">List Your Restaurant — It's Free</a>
     </div>
   </div>
@@ -357,13 +357,14 @@ const cities = [...new Set(
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: var(--gcc-fg-light);
+    color: var(--gcc-eat);
     margin-bottom: 0.75rem;
   }
 
   .hero-headline {
     font-size: clamp(2.25rem, 5vw, 3.5rem);
     font-weight: 700;
+    font-family: var(--gcc-font-display);
     letter-spacing: -0.04em;
     line-height: 1.1;
     margin-bottom: 1rem;
@@ -387,7 +388,7 @@ const cities = [...new Set(
   .back-link:hover { color: var(--gcc-fg); }
 
   /* ── Stats strip ── */
-  .stats-strip { background: var(--gcc-bg-muted); border-bottom: 1px solid var(--gcc-border); padding: 1.25rem 0; }
+  .stats-strip { background: var(--gcc-eat-light); border-bottom: 1px solid var(--gcc-border); padding: 1.25rem 0; }
 
   .stats-inner { display: flex; align-items: center; gap: 2rem; }
 
@@ -448,7 +449,7 @@ const cities = [...new Set(
     transition: all 0.15s;
   }
 
-  .pill:hover { border-color: var(--gcc-border-mid); background: var(--gcc-bg-muted); }
+  .pill:hover { border-color: var(--gcc-eat); background: var(--gcc-bg-muted); color: var(--gcc-eat); }
 
   .pill--active { background: var(--gcc-fg); color: #ffffff; border-color: var(--gcc-fg); }
   .pill--active:hover { background: #1f2937; border-color: #1f2937; }
@@ -470,13 +471,14 @@ const cities = [...new Set(
     gap: 0.5rem;
     padding: 1.5rem;
     border: 1px solid var(--gcc-border);
+    border-left: 3px solid transparent;
     border-radius: 12px;
     background: var(--gcc-bg);
     text-align: left;
     transition: box-shadow 0.15s, border-color 0.15s;
   }
 
-  .listing-card:hover { box-shadow: var(--gcc-shadow-md); border-color: var(--gcc-border-mid); }
+  .listing-card:hover { box-shadow: var(--gcc-shadow-md); border-color: var(--gcc-eat); border-left: 3px solid var(--gcc-eat); }
 
   .lc-category {
     display: inline-block;
@@ -671,7 +673,7 @@ const cities = [...new Set(
     display: inline-flex;
     align-items: center;
     padding: 0.6rem 1.5rem;
-    background: var(--gcc-fg);
+    background: var(--gcc-eat);
     color: #ffffff;
     font-size: 0.875rem;
     font-weight: 600;
@@ -679,7 +681,7 @@ const cities = [...new Set(
     transition: background 0.15s;
   }
 
-  .btn-apply:hover { background: #1f2937; }
+  .btn-apply:hover { background: oklch(0.44 0.16 42); }
 
   /* ── Responsive ── */
   @media (max-width: 900px) {
